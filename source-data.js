@@ -208,6 +208,7 @@
         timestamp: String(row[0] ?? "").trim(),
         description,
         name,
+                parsedName,
         localName,
         originalPrice: rawPrice,
         price: price.value,
