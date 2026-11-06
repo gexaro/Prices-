@@ -77,6 +77,64 @@
     };
   }
 
+  function parseMedicineName(value) {
+    const original = String(value || "").trim();
+    let working = original;
+
+    const formPatterns = [
+      [/\b(tab|tabs|tablet|tablets)\b\.?/i, "أقراص"],
+      [/\b(cap|caps|capsule|capsules)\b\.?/i, "كبسولات"],
+      [/\b(syrp|syrup|syrups)\b\.?/i, "شراب"],
+      [/\b(amp|amps|ampoule|ampoules)\b\.?/i, "أمبول"],
+      [/\b(vial|vials)\b\.?/i, "فيال"],
+      [/\b(inj|injection|syringe)\b\.?/i, "حقن"],
+      [/\b(cream)\b\.?/i, "كريم"],
+      [/\b(oint|ointment)\b\.?/i, "مرهم"],
+      [/\b(gel)\b\.?/i, "جل"],
+      [/\b(spray)\b\.?/i, "بخاخ"],
+      [/\b(drp|drops|drop)\b\.?/i, "قطرات"],
+      [/\b(supp|suppository)\b\.?/i, "تحاميل"],
+      [/\b(pdr|powder)\b\.?/i, "مسحوق"],
+      [/\b(inhaler)\b\.?/i, "بخاخ استنشاق"],
+      [/\b(oral)\b\.?/i, "فموي"],
+      [/\b(sol|solution)\b\.?/i, "محلول"]
+    ];
+
+    let dosageForm = "";
+
+    for (const [pattern, label] of formPatterns) {
+      if (pattern.test(working)) {
+        dosageForm = label;
+        working = working.replace(pattern, " ");
+        break;
+      }
+    }
+
+    const strengthPattern =
+      /(?:^|\s)(\d+(?:\.\d+)?(?:\s*\/\s*\d+(?:\.\d+)?){0,3}%?)(?=\s|$)/;
+
+    const match = working.match(strengthPattern);
+    let strength = "";
+
+    if (match) {
+      strength = match[1].replace(/\s/g, "");
+      working = working.replace(match[0], " ");
+    }
+
+    const brandName = working
+      .replace(/[💉]/g, " ")
+      .replace(/\s+/g, " ")
+      .replace(/^[\s+\-.,]+|[\s+\-.,]+$/g, "")
+      .trim();
+
+    return {
+      original,
+      brandName,
+      strength,
+      dosageForm
+    };
+  }
+
   function parse(input) {
     const rows = parseRows(input);
 
