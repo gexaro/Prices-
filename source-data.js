@@ -155,12 +155,7 @@
         price: price.value,
         priceValid: price.valid,
         issues,
-        needsReview: issues.some(issue =>
-          issue.includes("مراجعة") ||
-          issue.includes("انزياح") ||
-          issue.includes("صفراً") ||
-          issue.includes("مفقود")
-        )
+                needsReview: issues.length > 0
       });
     });
 
