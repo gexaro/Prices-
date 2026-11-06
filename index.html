@@ -218,7 +218,7 @@ function safe(v){
 function render(){
  const q=$("search").value.toLowerCase().trim();
  const filtered=medicines.filter(m=>
- [m.name,m.generic,m.strength,m.form,m.company].join(" ").toLowerCase().includes(q)
+[m.name,m.localName,m.generic,m.strength,m.form,m.company].join(" ").toLowerCase().includes(q)
  );
  $("total").textContent=medicines.length;
  $("categories").textContent=new Set(medicines.map(m=>m.form)).size;
@@ -234,7 +234,11 @@ function render(){
   const title=document.createElement("h3");
   title.textContent=m.name;
   const details=document.createElement("p");
-  details.textContent=[m.strength,m.form,m.company].filter(Boolean).join(" · ");
+details.textContent=[
+ m.localName,
+ m.generic ? "المادة العلمية / الوصف: "+m.generic : "",
+ m.strength,m.form,m.company
+].filter(Boolean).join(" · ");
   const actions=document.createElement("div");
   actions.className="item-actions";
   const edit=document.createElement("button");
