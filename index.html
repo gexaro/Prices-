@@ -1077,24 +1077,50 @@ function parseDelimited(text,delimiter){
 function headerIndex(headers,names){
  return headers.findIndex(h=>names.includes(normalizeText(h)));
 }
+
 function parseDescription(value){
  const description=String(value ?? "").trim();
- if(!description)return {description:"",generic:"",company:"",origin:""};
- const parts=description.split("/");
- const generic=(parts.length>1?parts.slice(0,-1).join("/"):description).trim().replace(/[،,\s]+$/,"");
- let manufacturer=parts.length>1?parts[parts.length-1].trim():"";
- const countries=["فرنسا","امريكا","أمريكا","الولايات المتحدة","بريطانيا","انجلترا","ألمانيا","المانيا","سويسرا","إيطاليا","ايطاليا","تركيا","الهند","الصين","الأردن","الاردن","مصر","السعودية","اليابان","كوريا","إسبانيا","اسبانيا","بلجيكا","هولندا","كندا","أستراليا","استراليا"];
+ if(!description)return {description:"",generic:"",company:"",origin:"",routes:""};
+
+ let text=description;
+ let company="";
  let origin="";
- for(const country of countries){
-  const re=new RegExp("(?:^|\\s)"+country+"\\s*$","i");
-  if(re.test(manufacturer)){
-   origin=country;
-   manufacturer=manufacturer.replace(re,"").trim();
-   break;
+ const countries=["فرنسا","امريكا","أمريكا","الولايات المتحدة","بريطانيا","انجلترا","ألمانيا","المانيا","سويسرا","إيطاليا","ايطاليا","تركيا","الهند","الصين","الأردن","الاردن","مصر","السعودية","اليابان","كوريا","إسبانيا","اسبانيا","بلجيكا","هولندا","كندا","أستراليا","استراليا","العراق","باكستان","صربيا","البرازيل"];
+
+ const parts=text.split("/");
+ if(parts.length>1){
+  let last=parts[parts.length-1].trim();
+  for(const country of countries){
+   const re=new RegExp("(?:^|\\s)"+country+"\\s*$","i");
+   if(re.test(last)){
+    origin=country;
+    last=last.replace(re,"").trim();
+    break;
+   }
+  }
+  const knownCompanies=/\b(accord|pioneer|bristol|acino|hemofarm|micro|reckitt benckiser|ldp|sdi|mera|protem|zafa|ajanta|bayer|sanofi|merck|abbott|pfizer|hikma|organon|aspen|julphar|mylan|united|riva)\b/i;
+  if(knownCompanies.test(last)){
+   company=last;
+   text=parts.slice(0,-1).join("/").trim();
+  }else if(origin){
+   company=last;
+   text=parts.slice(0,-1).join("/").trim();
   }
  }
- return {description,generic,company:manufacturer,origin};
+
+ const routePattern=/\b(IM\s*[-/]?\s*IV|IV\s*[-/]?\s*IM|IM|IV|intramuscular|intravenous|intravenously|intramuscularly)\b/ig;
+ const routes=[];
+ text=text.replace(routePattern,match=>{
+  const route=match.toUpperCase().replace(/\s+/g,"");
+  const label=route.includes("IM")&&route.includes("IV")?"وريدي/عضلي":route==="IM"||route.includes("INTRAMUSCULAR")?"عضلي":"وريدي";
+  if(!routes.includes(label))routes.push(label);
+  return " ";
+ });
+
+ const generic=text.replace(/\s+/g," ").replace(/[،,\s]+$/,"").trim();
+ return {description,generic,company,origin,routes:routes.join(" / ")};
 }
+
 $("sheetImportBtn").onclick=()=>$("sheetFile").click();
 $("sheetFile").onchange=async e=>{
  const file=e.target.files[0];if(!file)return;
