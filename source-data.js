@@ -54,12 +54,12 @@
     const original = String(value ?? "").trim();
 
     // إزالة العلامات التي وافق المستخدم على تجاهلها.
-    const cleaned = original
+        const cleaned = original
+      .replace(/\s*العلبة\s*$/i, "")
       .replace(/[*^]/g, "")
       .replace(/[“”"']/g, "")
       .replace(/[٬،,]/g, "")
       .replace(/\s+/g, "");
-
     if (!/^\d+(?:\.\d+)?$/.test(cleaned)) {
       return {
         value: null,
