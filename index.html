@@ -1158,7 +1158,10 @@ $("sheetFile").onchange=async e=>{
     const item=parseMedicine(name,price);
     const parsed=parseDescription(description);
     item.generic=parsed.generic;
-    item.company=item.company||parsed.company;
+   if(parsed.routes){
+ item.form=[item.form,parsed.routes].filter(Boolean).join(" ");
+}
+     item.company=item.company||parsed.company;
     item.origin=parsed.origin;
     item.description=parsed.description;
     item.localName=arabic;
