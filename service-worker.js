@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "prices-v2";
+const CACHE_NAME = "prices-v3";
 
 const APP_FILES = [
   "./",
@@ -13,7 +13,6 @@ self.addEventListener("install", event => {
       cache.addAll(APP_FILES)
     )
   );
-
   self.skipWaiting();
 });
 
@@ -27,7 +26,6 @@ self.addEventListener("activate", event => {
       )
     )
   );
-
   self.clients.claim();
 });
 
@@ -43,22 +41,24 @@ self.addEventListener("fetch", event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache =>
-            cache.put("./index.html", copy)
-          );
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache =>
+              cache.put("./index.html", copy)
+            );
+          }
           return response;
         })
-        .catch(() =>
-          caches.match("./index.html")
-        )
+        .catch(() => caches.match("./index.html"))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then(cached =>
-      cached || fetch(request).then(response => {
+    caches.match(request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(request).then(response => {
         if (response.ok) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache =>
@@ -66,7 +66,7 @@ self.addEventListener("fetch", event => {
           );
         }
         return response;
-      })
-    )
+      });
+    })
   );
 });
