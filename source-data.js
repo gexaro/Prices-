@@ -96,9 +96,7 @@
       [/\b(supp|suppository)\b\.?/i, "تحاميل"],
       [/\b(pdr|powder)\b\.?/i, "مسحوق"],
       [/\b(inhaler)\b\.?/i, "بخاخ استنشاق"],
-      [/\b(oral)\b\.?/i, "فموي"],
-          [/\b(orally|oral)\b\.?/i, "فموي"],
-       [/\b(sol|solution)\b\.?/i, "محلول"]
+      [/\b(orally|oral)\b\.?/i, "فموي"],       [/\b(sol|solution)\b\.?/i, "محلول"]
     ];
 
     let dosageForm = "";
