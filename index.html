@@ -97,13 +97,16 @@ input::placeholder{color:var(--muted)}
 <section class="panel">
 <h3 style="margin-top:0">إدارة البيانات</h3>
 <div class="tools">
-<button class="secondary" id="backupBtn">تصدير نسخة JSON</button>
-<button class="secondary" id="importBtn">استيراد نسخة JSON</button>
-<button class="secondary" id="csvBtn">تصدير إلى CSV</button>
+ <button class="secondary" id="backupBtn">تصدير نسخة JSON</button>
+ <button class="secondary" id="importBtn">استيراد نسخة JSON</button>
+ <button class="secondary" id="csvBtn">تصدير إلى CSV</button>
+ <button class="primary" id="sheetImportBtn">استيراد Google Sheets</button>
 </div>
 <input id="importFile" type="file" accept=".json,application/json" hidden>
-<p class="note">بياناتك محفوظة محلياً على هذا الجهاز والمتصفح. احتفظ بنسخة احتياطية دورياً.</p>
-</section>
+<input id="sheetFile" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+<div id="sheetPreview" class="preview"></div>
+<p class="note">يمكنك استيراد جدول الأدوية من Google Sheets بصيغة CSV.</p>
+<p class="note">بياناتك محفوظة محلياً. احتفظ بنسخة احتياطية دورياً.</p></section>
 </main>
 
 <script>
