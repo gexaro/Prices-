@@ -2,231 +2,309 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#173d35">
-  <title>Prices | دليل أسعار الأدوية</title>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;background:#f5f6f2;color:#19352e;font-family:Arial,sans-serif}
-    header{background:#173d35;color:white;padding:22px 20px}
-    header h2{margin:0;font-size:21px}
-    header p{margin:7px 0 0;color:#c5d7ce;font-size:12px}
-    main{max-width:750px;margin:auto;padding:22px 16px}
-    .welcome{padding:15px 2px 24px}
-    .welcome small{color:#b28c56;letter-spacing:2px}
-    .welcome h1{font-size:32px;line-height:1.5;margin:10px 0}
-    .welcome h1 span{color:#397563}
-    .welcome p{color:#78877f;font-size:14px}
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .stat{background:white;border:1px solid #e6eae4;border-radius:14px;padding:17px}
-    .stat span{font-size:12px;color:#849087}
-    .stat strong{display:block;font-size:26px;margin-top:8px}
-    .search{margin-top:22px}
-    input,select{font:inherit}
-    #search{width:100%;padding:15px;border:1px solid #e1e7e0;border-radius:12px;background:white;outline-color:#397563}
-    .actions{display:flex;gap:10px;margin-top:12px}
-    button{font:inherit;cursor:pointer}
-    .add{background:#245b4d;color:white;border:0;border-radius:11px;padding:13px 20px;flex:1}
-    .backup{background:#e6eee8;color:#245b4d;border:0;border-radius:11px;padding:13px}
-    .section-title{margin:28px 0 13px;font-size:17px}
-    #list{display:grid;gap:10px}
-    .medicine{background:white;border:1px solid #e6eae4;border-radius:13px;padding:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
-    .medicine h3{margin:0 0 6px;font-size:15px}
-    .medicine p{margin:0;color:#859188;font-size:12px}
-    .price{color:#245b4d;font-weight:bold;white-space:nowrap}
-    .empty{text-align:center;color:#89958d;padding:35px 10px}
-    dialog{border:0;border-radius:16px;width:90%;max-width:430px;padding:22px}
-    dialog::backdrop{background:#102820aa}
-    dialog h2{margin-top:0}
-    dialog label{display:block;font-size:13px;margin:13px 0 6px}
-    dialog input,dialog select{width:100%;padding:12px;border:1px solid #dce4dc;border-radius:9px;background:white}
-    .form-actions{display:flex;gap:10px;margin-top:20px}
-    .form-actions button{flex:1;padding:12px;border:0;border-radius:9px}
-    .save{background:#245b4d;color:white}
-    .cancel{background:#edf0eb;color:#33483d}
-    @media(min-width:600px){.welcome h1{font-size:40px}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173d35">
+<title>Prices | دليل أسعار الأدوية</title>
+<style>
+:root{--bg:#eef2ee;--panel:rgba(255,255,255,.72);--text:#19352e;--muted:#78877f;--line:rgba(40,70,55,.12);--accent:#245b4d;--soft:#e2eee7;--shadow:0 12px 35px #183b2b12}
+[data-theme="dark"]{--bg:#101a17;--panel:rgba(34,49,43,.78);--text:#edf5ef;--muted:#a3b4a9;--line:#ffffff18;--accent:#8bc7a9;--soft:#263c32;--shadow:0 12px 35px #0004}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;transition:.2s}
+header{padding:20px;display:flex;align-items:center;justify-content:space-between;background:var(--panel);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h2{margin:0;font-size:21px}
+header p{margin:5px 0 0;color:var(--muted);font-size:12px}
+main{max-width:780px;margin:auto;padding:20px 15px 60px}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.iconbtn,.action,.primary,.secondary,.danger{border:0;border-radius:12px;padding:12px 15px}
+.iconbtn{background:var(--soft);color:var(--text)}
+.welcome{padding:24px 4px}
+.welcome small{color:#b28c56;letter-spacing:2px}
+.welcome h1{font-size:32px;line-height:1.5;margin:10px 0}
+.welcome h1 span{color:var(--accent)}
+.welcome p{color:var(--muted);font-size:14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat,.panel,.medicine{background:var(--panel);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow)}
+.stat{padding:17px}
+.stat span{font-size:12px;color:var(--muted)}
+.stat strong{display:block;font-size:26px;margin-top:8px}
+.panel{padding:16px;margin-top:17px}
+.section-title{font-size:17px;margin:22px 2px 12px}
+input,select{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);outline-color:var(--accent)}
+input::placeholder{color:var(--muted)}
+.primary{background:var(--accent);color:white}
+.secondary{background:var(--soft);color:var(--text)}
+.danger{background:#a83e3e;color:white}
+.actions{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
+.actions button{flex:1}
+.preview{display:none;margin-top:12px;padding:14px;background:var(--soft);border-radius:13px;line-height:1.9;font-size:13px}
+.preview.show{display:block}
+.preview strong{color:var(--accent)}
+#list{display:grid;gap:10px}
+.medicine{padding:15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.medicine h3{margin:0 0 7px;font-size:15px}
+.medicine p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+.price{font-weight:bold;color:var(--accent);white-space:nowrap;font-size:14px}
+.item-actions{display:flex;gap:5px;margin-top:9px}
+.item-actions button{padding:6px 9px;border:0;border-radius:8px;background:var(--soft);color:var(--text);font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tools button{width:100%}
+.note{font-size:12px;color:var(--muted);line-height:1.8}
+@media(max-width:430px){.welcome h1{font-size:28px}.medicine{align-items:flex-start}.price{font-size:12px}}
+</style>
 </head>
 <body>
-  <header>
-    <h2>Prices</h2>
-    <p>دليل أدوية الصيدلية وأسعارها</p>
-  </header>
+<header>
+<div><h2>Prices</h2><p>دليل أدوية الصيدلية وأسعارها</p></div>
+<button class="iconbtn" id="themeBtn">◐ المظهر</button>
+</header>
+<main>
+<section class="welcome">
+<small>PHARMACY PRICE BOOK</small>
+<h1>أسعار أدويتك،<br><span>بكل سهولة.</span></h1>
+<p>دليلك الخاص للبحث عن الأدوية وأسعارها.</p>
+</section>
 
-  <main>
-    <section class="welcome">
-      <small>PHARMACY PRICE BOOK</small>
-      <h1>أسعار أدويتك،<br><span>بكل سهولة.</span></h1>
-      <p>دليلك الخاص للبحث عن الأدوية وإدارة أسعارها.</p>
-    </section>
+<section class="stats">
+<div class="stat"><span>إجمالي الأدوية</span><strong id="total">0</strong></div>
+<div class="stat"><span>التصنيفات</span><strong id="categories">0</strong></div>
+</section>
 
-    <section class="stats">
-      <div class="stat">
-        <span>إجمالي الأدوية</span>
-        <strong id="total">0</strong>
-      </div>
-      <div class="stat">
-        <span>التصنيفات</span>
-        <strong id="categories">0</strong>
-      </div>
-    </section>
+<section class="panel">
+<h3 style="margin-top:0">إضافة دواء سريعاً</h3>
+<input id="quickInput" placeholder="مثال: Panadol 500 tab (gsk) 4000">
+<div class="actions">
+<button class="primary" id="analyzeBtn">تحليل الدواء</button>
+<button class="secondary" id="clearBtn">مسح</button>
+</div>
+<div id="preview" class="preview"></div>
+<p class="note">اكتب اسم الدواء والتركيز والاختصار والشركة والسعر. راجع المعاينة قبل الحفظ.</p>
+</section>
 
-    <section class="search">
-      <input id="search" type="search" placeholder="ابحث عن اسم الدواء أو التركيز...">
-      <div class="actions">
-        <button class="add" onclick="openForm()">＋ إضافة دواء</button>
-        <button class="backup" onclick="backup()">النسخ الاحتياطي</button>
-      </div>
-    </section>
+<section class="panel">
+<input id="search" type="search" placeholder="ابحث بالاسم أو التركيز أو الشركة...">
+</section>
 
-    <h3 class="section-title">قائمة الأدوية</h3>
-    <section id="list"></section>
-  </main>
+<h3 class="section-title">قائمة الأدوية</h3>
+<section id="list"></section>
 
-  <dialog id="medicineDialog">
-    <form id="medicineForm">
-      <h2>إضافة دواء</h2>
+<section class="panel">
+<h3 style="margin-top:0">إدارة البيانات</h3>
+<div class="tools">
+<button class="secondary" id="backupBtn">تصدير نسخة JSON</button>
+<button class="secondary" id="importBtn">استيراد نسخة JSON</button>
+<button class="secondary" id="csvBtn">تصدير إلى CSV</button>
+</div>
+<input id="importFile" type="file" accept=".json,application/json" hidden>
+<p class="note">بياناتك محفوظة محلياً على هذا الجهاز والمتصفح. احتفظ بنسخة احتياطية دورياً.</p>
+</section>
+</main>
 
-      <label>الاسم التجاري</label>
-      <input id="name" required placeholder="اسم الدواء">
+<script>
+const $=id=>document.getElementById(id);
+let medicines=JSON.parse(localStorage.getItem("prices")||"[]");
+let pending=null;
+let editingId=null;
 
-      <label>الاسم العلمي</label>
-      <input id="generic" placeholder="الاسم العلمي">
+function save(){
+ localStorage.setItem("prices",JSON.stringify(medicines));
+ render();
+}
 
-      <label>التركيز</label>
-      <input id="strength" placeholder="مثال: 500 mg">
+function parseMedicine(raw){
+ let s=raw.trim();
+ const priceMatch=s.match(/(\d[\d,]*\.?\d*)\s*$/);
+ if(!priceMatch) throw Error("لم يتم العثور على السعر في نهاية السطر.");
+ const price=Number(priceMatch[1].replace(/,/g,""));
+ if(!Number.isFinite(price)||price<=0) throw Error("السعر غير صحيح.");
+ s=s.slice(0,priceMatch.index).trim();
 
-      <label>الشكل الصيدلاني</label>
-      <select id="form">
-        <option>أقراص</option>
-        <option>كبسولات</option>
-        <option>شراب</option>
-        <option>معلق</option>
-        <option>مرهم</option>
-        <option>كريم</option>
-        <option>حقن</option>
-        <option>أمبولات</option>
-        <option>قطرات</option>
-        <option>تحاميل</option>
-        <option>أخرى</option>
-      </select>
+ let company="";
+ const companyMatch=s.match(/\(([^)]+)\)\s*$/);
+ if(companyMatch){
+  company=companyMatch[1].trim();
+  s=s.slice(0,companyMatch.index).trim();
+ }
 
-      <label>السعر بالدينار العراقي</label>
-      <input id="price" type="number" min="0" required placeholder="السعر">
+ const patterns=[
+  {re:/\b(tabs?|tablets?)\b\.?/i,form:"أقراص",unit:"الشريط"},
+  {re:/\b(caps?|capsules?)\b\.?/i,form:"كبسولات",unit:"الشريط"},
+  {re:/\b(syrp?|syrups?)\b\.?/i,form:"شراب",unit:"العبوة"},
+  {re:/\b(susp|suspension)\b\.?/i,form:"معلق",unit:"العبوة"},
+  {re:/\b(oint|ointment)\b\.?/i,form:"مرهم",unit:"الأنبوب"},
+  {re:/\b(cr|cream)\b\.?/i,form:"كريم",unit:"الأنبوب"},
+  {re:/\b(amp|amps|ampoule)\b\.?/i,form:"أمبولات",unit:"الأمبولة"},
+  {re:/\b(vial|vials)\b\.?/i,form:"قارورة",unit:"القارورة"},
+  {re:/\b(drops?|drop)\b\.?/i,form:"قطرات",unit:"العبوة"},
+  {re:/\b(supp|suppositories)\b\.?/i,form:"تحاميل",unit:null},
+  {re:/\b(inj|injection|injections)\b\.?/i,form:"حقن",unit:null}
+ ];
 
-      <label>وحدة السعر</label>
-      <select id="unit">
-        <option>الشريط</option>
-        <option>العبوة</option>
-        <option>الأنبوب</option>
-        <option>الأمبولة</option>
-        <option>القارورة</option>
-        <option>القطعة</option>
-      </select>
+ let found=patterns.find(p=>p.re.test(s));
+ if(!found) throw Error("لم أتعرف على الشكل الصيدلاني. أضف اختصاراً مثل tab أو syr أو oint.");
 
-      <div class="form-actions">
-        <button type="button" class="cancel" onclick="medicineDialog.close()">إلغاء</button>
-        <button type="submit" class="save">حفظ</button>
-      </div>
-    </form>
-  </dialog>
+ if(found.form==="حقن") throw Error("الحقن تحتاج تحديد الوحدة. استخدم amp للأمبولة أو vial للقارورة.");
+ if(found.form==="تحاميل") throw Error("التحاميل تحتاج تحديد box أو piece لتحديد وحدة السعر.");
 
-  <script>
-    let medicines = JSON.parse(localStorage.getItem("prices") || "[]");
+ s=s.replace(found.re," ").replace(/\s+/g," ").trim();
 
-    const units = {
-      "أقراص":"الشريط",
-      "كبسولات":"الشريط",
-      "شراب":"العبوة",
-      "معلق":"العبوة",
-      "مرهم":"الأنبوب",
-      "كريم":"الأنبوب",
-      "حقن":"العبوة",
-      "أمبولات":"الأمبولة",
-      "قطرات":"العبوة",
-      "تحاميل":"القطعة"
-    };
+ const strengthMatch=s.match(/\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|iu|%)?\b/i);
+ if(!strengthMatch) throw Error("لم أتعرف على التركيز. أضف التركيز إلى السطر.");
+ const strength=strengthMatch[0].trim();
+ const name=s.replace(strengthMatch[0]," ").replace(/\s+/g," ").trim();
+ if(!name) throw Error("اسم الدواء غير واضح.");
 
-    form.addEventListener("change", function(e) {
-      if(e.target.id === "form") unit.value = units[form.value] || "القطعة";
-    });
+ return {name,strength,form:found.form,company,price,unit:found.unit};
+}
 
-    function openForm(){
-      medicineForm.reset();
-      unit.value = "الشريط";
-      medicineDialog.showModal();
-    }
+$("analyzeBtn").onclick=()=>{
+ try{
+  pending=parseMedicine($("quickInput").value);
+  const p=pending;
+  $("preview").innerHTML=
+   "<strong>معاينة الدواء</strong><br>"+
+   "الاسم: "+safe(p.name)+"<br>"+
+   "التركيز: "+safe(p.strength)+"<br>"+
+   "الشكل: "+safe(p.form)+"<br>"+
+   "الشركة: "+safe(p.company||"غير محددة")+"<br>"+
+   "السعر: "+p.price.toLocaleString("en-US")+" د.ع<br>"+
+   "وحدة السعر: "+safe(p.unit);
+  if(editingId!==null) $("preview").innerHTML+="<br><button class='primary' id='confirmBtn'>تأكيد التعديل</button>";
+  else $("preview").innerHTML+="<br><button class='primary' id='confirmBtn'>حفظ الدواء</button>";
+  $("preview").classList.add("show");
+  $("confirmBtn").onclick=confirmSave;
+ }catch(e){
+  pending=null;
+  $("preview").textContent=e.message;
+  $("preview").classList.add("show");
+ }
+};
 
-    medicineForm.addEventListener("submit", function(e){
-      e.preventDefault();
+function confirmSave(){
+ if(!pending)return;
+ if(editingId!==null){
+  const i=medicines.findIndex(m=>m.id===editingId);
+  if(i>=0) medicines[i]={...medicines[i],...pending};
+ }else{
+  medicines.push({id:Date.now(),...pending});
+ }
+ editingId=null;
+ pending=null;
+ $("quickInput").value="";
+ $("preview").classList.remove("show");
+ save();
+}
 
-      medicines.push({
-        id:Date.now(),
-        name:name.value.trim(),
-        generic:generic.value.trim(),
-        strength:strength.value.trim(),
-        form:form.value,
-        price:Number(price.value),
-        unit:unit.value
-      });
+$("clearBtn").onclick=()=>{
+ $("quickInput").value="";
+ $("preview").classList.remove("show");
+ pending=null;
+ editingId=null;
+};
 
-      localStorage.setItem("prices",JSON.stringify(medicines));
-      medicineDialog.close();
-      render();
-    });
+function safe(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
 
-    function render(){
-      const query = search.value.toLowerCase();
+function render(){
+ const q=$("search").value.toLowerCase().trim();
+ const filtered=medicines.filter(m=>
+ [m.name,m.generic,m.strength,m.form,m.company].join(" ").toLowerCase().includes(q)
+ );
+ $("total").textContent=medicines.length;
+ $("categories").textContent=new Set(medicines.map(m=>m.form)).size;
+ $("list").innerHTML="";
+ if(!filtered.length){
+  $("list").innerHTML='<div class="empty">لا توجد أدوية لعرضها حالياً</div>';
+  return;
+ }
+ filtered.forEach(m=>{
+  const item=document.createElement("article");
+  item.className="medicine";
+  const info=document.createElement("div");
+  const title=document.createElement("h3");
+  title.textContent=m.name;
+  const details=document.createElement("p");
+  details.textContent=[m.strength,m.form,m.company].filter(Boolean).join(" · ");
+  const actions=document.createElement("div");
+  actions.className="item-actions";
+  const edit=document.createElement("button");
+  edit.textContent="تعديل";
+  edit.onclick=()=>editMedicine(m.id);
+  const del=document.createElement("button");
+  del.textContent="حذف";
+  del.onclick=()=>deleteMedicine(m.id);
+  actions.append(edit,del);
+  info.append(title,details,actions);
+  const cost=document.createElement("div");
+  cost.className="price";
+  cost.textContent=Number(m.price).toLocaleString("en-US")+" د.ع / "+(m.unit||"غير محدد");
+  item.append(info,cost);
+  $("list").append(item);
+ });
+}
 
-      const filtered = medicines.filter(m =>
-        [m.name,m.generic,m.strength].join(" ").toLowerCase().includes(query)
-      );
+function editMedicine(id){
+ const m=medicines.find(x=>x.id===id);
+ if(!m)return;
+ const formCode={"أقراص":"tab","كبسولات":"cap","شراب":"syr","معلق":"susp","مرهم":"oint","كريم":"cream","أمبولات":"amp","قارورة":"vial","قطرات":"drop","تحاميل":"supp","حقن":"inj"}[m.form]||"";
+ $("quickInput").value=[m.name,m.strength,formCode,m.company?"("+m.company+")":"",m.price].filter(Boolean).join(" ");
+ editingId=id;
+ $("preview").classList.remove("show");
+ window.scrollTo({top:0,behavior:"smooth"});
+ $("quickInput").focus();
+}
 
-      total.textContent = medicines.length;
-      categories.textContent = new Set(medicines.map(m=>m.form)).size;
+function deleteMedicine(id){
+ if(!confirm("هل تريد حذف هذا الدواء؟"))return;
+ medicines=medicines.filter(m=>m.id!==id);
+ save();
+}
 
-      list.innerHTML = "";
+function download(content,type,name){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=name;a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 
-      if(!filtered.length){
-        list.innerHTML = '<div class="empty">لا توجد أدوية لعرضها حالياً</div>';
-        return;
-      }
+$("backupBtn").onclick=()=>download(JSON.stringify(medicines,null,2),"application/json","prices-backup.json");
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!Array.isArray(data))throw Error();
+  if(confirm("سيتم استبدال القائمة الحالية بالنسخة المستوردة. متابعة؟")){
+   medicines=data;save();alert("تم استيراد البيانات.");
+  }
+ }catch{alert("ملف النسخة الاحتياطية غير صالح.");}
+ e.target.value="";
+};
 
-      filtered.forEach(m=>{
-        const item = document.createElement("article");
-        item.className = "medicine";
+$("csvBtn").onclick=()=>{
+ const rows=[["Name","Strength","Form","Company","Price IQD","Price Unit"],
+ ...medicines.map(m=>[m.name,m.strength,m.form,m.company,m.price,m.unit])];
+ const csv="\uFEFF"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ download(csv,"text/csv;charset=utf-8","prices.csv");
+};
 
-        const info = document.createElement("div");
-        const title = document.createElement("h3");
-        title.textContent = m.name;
+$("search").addEventListener("input",render);
 
-        const details = document.createElement("p");
-        details.textContent = [m.generic,m.strength,m.form].filter(Boolean).join(" · ");
+const savedTheme=localStorage.getItem("prices-theme");
+if(savedTheme)document.documentElement.dataset.theme=savedTheme;
+else if(matchMedia("(prefers-color-scheme: dark)").matches)document.documentElement.dataset.theme="dark";
 
-        info.append(title,details);
+$("themeBtn").onclick=()=>{
+ const next=document.documentElement.dataset.theme==="dark"?"light":"dark";
+ document.documentElement.dataset.theme=next;
+ localStorage.setItem("prices-theme",next);
+};
 
-        const cost = document.createElement("div");
-        cost.className = "price";
-        cost.textContent = m.price.toLocaleString("en-US") + " د.ع / " + m.unit;
-
-        item.append(info,cost);
-        list.append(item);
-      });
-    }
-
-    function backup(){
-      const blob = new Blob([JSON.stringify(medicines,null,2)],{type:"application/json"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "prices-backup.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    search.addEventListener("input",render);
-    render();
-  </script>
+render();
+</script>
 </body>
 </html>
