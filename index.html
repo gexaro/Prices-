@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -447,8 +446,7 @@ textarea.field{min-height:112px;resize:vertical;line-height:1.8}
     <strong id="categories">0</strong>
    </div>
   </div>
-
-  <div class="search-wrap">
+    <div class="search-wrap">
    <span class="search-icon">⌕</span>
    <input id="search" type="search" placeholder="ابحث عن دواء، مادة، شركة، سعر...">
    <button class="clear-search" id="clearSearch" aria-label="مسح البحث">×</button>
@@ -490,12 +488,6 @@ textarea.field{min-height:112px;resize:vertical;line-height:1.8}
    <label class="field-label" for="medicineInput">معلومات الدواء</label>
    <p class="field-hint">مثال: Panadol 500 mg tablets (GSK) 4000</p>
    <textarea class="field" id="medicineInput" placeholder="اكتب اسم الدواء والتركيز والشكل والشركة والسعر..."></textarea>
-
-   <label class="field-label" for="genericInput">المادة العلمية / الوصف</label>
-   <input class="field" id="genericInput" placeholder="مثال: Paracetamol">
-
-   <label class="field-label" for="localNameInput">الاسم العربي</label>
-   <input class="field" id="localNameInput" placeholder="مثال: بنادول">
 
    <div class="btn-row">
     <button class="btn btn-primary" id="analyzeBtn">تحليل البيانات</button>
@@ -739,7 +731,7 @@ function parseMedicine(raw,externalPrice){
   text=text.replace(re," ").replace(new RegExp(escaped,"i")," ");
  }
 
- const strengthRe=/\b\d+(?:\.\d+)?\s*(?:mg|mcg|μg|g|kg|ml|l|iu|u|%)\b|\b\d+(?:\.\d+)?\s*(?:مغ|ملغ|ميكروغرام|غرام|جم|مل|وحدة|٪)\b|\b\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?\s*(?:mg|mcg|ml|g|iu)\b/ig;
+ const strengthRe=/\b\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?(?:\s*(?:mg|mcg|μg|g|kg|ml|l|iu|u|%)\b)?|\b\d+(?:\.\d+)?\s*(?:mg|mcg|μg|g|kg|ml|l|iu|u|%|مغ|ملغ|ميكروغرام|غرام|جم|مل|وحدة|٪)\b|\b\d+(?:\.\d+)?(?=\s|$)/ig;
  const strengths=[...text.matchAll(strengthRe)];
  const strength=strengths.map(x=>x[0].replace(/\s+/g," ").trim()).join(" / ");
  strengths.reverse().forEach(x=>{text=text.replace(x[0]," ")});
@@ -755,7 +747,8 @@ function parseMedicine(raw,externalPrice){
   unit:unit || "غير محدد",
   generic:"",
   localName:"",
-  description:""
+  description:"",
+  origin:""
  };
 }
 function displayName(m){
@@ -793,7 +786,7 @@ function renderMedicineCard(m){
   <div class="medicine-icon">${medicineIcon(m.form)}</div>
   <div class="medicine-info">
    <h3 class="medicine-name">${safe(displayName(m) || "بدون اسم")}</h3>
-   <div class="medicine-sub">${safe([m.localName,m.generic,m.company].filter(Boolean).join(" · ") || "اضغط لعرض التفاصيل")}</div>
+   <div class="medicine-sub">${safe([m.localName,m.generic,m.company,m.origin].filter(Boolean).join(" · ") || "اضغط لعرض التفاصيل")}</div>
   </div>
   <div class="medicine-price">
    <strong>${formatPrice(m.price)}</strong>
@@ -810,7 +803,7 @@ function getFiltered(query,filter){
   list=list.filter(m=>{
    const all=[
     m.name,m.localName,m.generic,m.description,m.strength,m.form,
-    m.company,m.price,m.unit,m.dosage,m.notes
+    m.company,m.origin,m.price,m.unit,m.dosage,m.notes
    ].map(normalizeText).join(" ");
    return all.includes(q);
   });
@@ -877,8 +870,6 @@ $("sortBtn").onclick=()=>{
 
 function resetForm(){
  $("medicineInput").value="";
- $("genericInput").value="";
- $("localNameInput").value="";
  $("preview").classList.remove("show");
  $("previewFields").innerHTML="";
  pending=null;
@@ -893,11 +884,10 @@ function buildPreview(data){
   ["name","الاسم التجاري","text"],
   ["strength","التركيز","text"],
   ["form","الشكل الصيدلاني","select"],
-  ["generic","المادة العلمية","text"],
   ["company","الشركة المصنعة","text"],
   ["price","السعر","number"],
   ["unit","وحدة التسعير","text"],
-  ["localName","الاسم العربي","text"]
+  ["origin","بلد المنشأ","text"]
  ];
  $("previewFields").innerHTML="";
  fields.forEach(([key,label,type])=>{
@@ -931,13 +921,12 @@ function buildPreview(data){
 $("analyzeBtn").onclick=()=>{
  try{
   const data=parseMedicine($("medicineInput").value);
-  data.generic=$("genericInput").value.trim();
-  data.localName=$("localNameInput").value.trim();
   buildPreview(data);
  }catch(error){toast(error.message)}
 };
 function savePending(){
  if(!pending)return;
+ const wasEditing=editingId!==null;
  const item={
   ...pending,
   id:editingId ?? Date.now(),
@@ -945,14 +934,14 @@ function savePending(){
  };
  if(!item.name || !String(item.name).trim()){toast("اسم الدواء مطلوب");return}
  if(item.price===null){toast("أدخل سعراً صحيحاً");return}
- if(editingId!==null){
+ if(wasEditing){
   const index=medicines.findIndex(m=>String(m.id)===String(editingId));
   if(index>=0) medicines[index]={...medicines[index],...item};
  }else medicines.push(item);
  if(persist()){
   resetForm();
   showView("home");
-  toast(editingId!==null?"تم تحديث الدواء":"تم حفظ الدواء");
+  toast(wasEditing?"تم تحديث الدواء":"تم حفظ الدواء");
  }
 }
 $("saveMedicineBtn").onclick=savePending;
@@ -963,8 +952,6 @@ function editMedicine(id){
  editingId=id;
  $("addTitle").textContent="تعديل بيانات الدواء";
  $("medicineInput").value=[m.name,m.strength,m.form,m.company?"("+m.company+")":"",m.price].filter(Boolean).join(" ");
- $("genericInput").value=m.generic||m.description||"";
- $("localNameInput").value=m.localName||"";
  const copy={...m};
  buildPreview(copy);
  showView("add");
@@ -989,6 +976,7 @@ function openDetails(id){
   ["الشكل الصيدلاني",m.form],
   ["المادة العلمية",m.generic],
   ["الشركة المصنعة",m.company],
+  ["بلد المنشأ",m.origin],
   ["السعر",formatPrice(m.price)+" د.ع"],
   ["وحدة التسعير",m.unit],
   ["الوصف",m.description],
@@ -1089,6 +1077,24 @@ function parseDelimited(text,delimiter){
 function headerIndex(headers,names){
  return headers.findIndex(h=>names.includes(normalizeText(h)));
 }
+function parseDescription(value){
+ const description=String(value ?? "").trim();
+ if(!description)return {description:"",generic:"",company:"",origin:""};
+ const parts=description.split("/");
+ const generic=(parts.length>1?parts.slice(0,-1).join("/"):description).trim().replace(/[،,\s]+$/,"");
+ let manufacturer=parts.length>1?parts[parts.length-1].trim():"";
+ const countries=["فرنسا","امريكا","أمريكا","الولايات المتحدة","بريطانيا","انجلترا","ألمانيا","المانيا","سويسرا","إيطاليا","ايطاليا","تركيا","الهند","الصين","الأردن","الاردن","مصر","السعودية","اليابان","كوريا","إسبانيا","اسبانيا","بلجيكا","هولندا","كندا","أستراليا","استراليا"];
+ let origin="";
+ for(const country of countries){
+  const re=new RegExp("(?:^|\\s)"+country+"\\s*$","i");
+  if(re.test(manufacturer)){
+   origin=country;
+   manufacturer=manufacturer.replace(re,"").trim();
+   break;
+  }
+ }
+ return {description,generic,company:manufacturer,origin};
+}
 $("sheetImportBtn").onclick=()=>$("sheetFile").click();
 $("sheetFile").onchange=async e=>{
  const file=e.target.files[0];if(!file)return;
@@ -1110,13 +1116,26 @@ $("sheetFile").onchange=async e=>{
   rows.slice(1).forEach((r,i)=>{
    const line=i+2;
    const get=c=>c>=0?String(r[c]??"").trim():"";
-   const name=get(nameCol),price=get(priceCol);
+   let name=get(nameCol),price=get(priceCol),description=get(descCol),arabic=get(arabicCol);
+   if(r.length>headers.length && descCol===0 && nameCol===1 && arabicCol===2 && priceCol===3){
+    const formIndex=r.findIndex((cell,index)=>index>0 && FORM_PATTERNS.some(f=>f.terms.some(term=>normalizeText(cell).includes(normalizeText(term)))));
+    if(formIndex>0){
+     description=r.slice(0,formIndex).join(",").trim();
+     name=String(r[formIndex]??"").trim();
+     arabic=String(r[formIndex+1]??"").trim();
+     price=r.slice(formIndex+2).join("").trim();
+    }else price=r.slice(priceCol).join("").trim();
+   }else if(r.length>headers.length && priceCol===headers.length-1)price=r.slice(priceCol).join("").trim();
    if(!name){issues.push("الصف "+line+": الاسم مفقود");return}
    if(normalizePrice(price)===null){issues.push("الصف "+line+": السعر غير صالح");return}
    try{
     const item=parseMedicine(name,price);
-    item.generic=get(descCol);
-    item.localName=get(arabicCol);
+    const parsed=parseDescription(description);
+    item.generic=parsed.generic;
+    item.company=item.company||parsed.company;
+    item.origin=parsed.origin;
+    item.description=parsed.description;
+    item.localName=arabic;
     item.id=Date.now()+i;
     if(!item.form)warnings.push("الصف "+line+": لم يتم التعرف على الشكل الصيدلاني");
     if(!item.strength)warnings.push("الصف "+line+": لم يتم التعرف على التركيز");
@@ -1153,7 +1172,7 @@ $("sheetFile").onchange=async e=>{
 $("csvBtn").onclick=()=>{
  const headers=["Description","Name","الاسم","Price","Strength","Form","Company","Unit"];
  const rows=[headers,...medicines.map(m=>[
-  m.generic||m.description||"",m.name||"",m.localName||"",m.price??"",
+  m.description||[m.generic,m.company,m.origin].filter(Boolean).join(" / "),m.name||"",m.localName||"",m.price??"",
   m.strength||"",m.form||"",m.company||"",m.unit||""
  ])];
  const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
