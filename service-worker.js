@@ -1,10 +1,11 @@
 
-const CACHE_NAME = "prices-v3";
+const CACHE_NAME = "prices-v4";
 
 const APP_FILES = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./Pharmacy%20-%20Form%20Responses%201.csv"
 ];
 
 self.addEventListener("install", event => {
