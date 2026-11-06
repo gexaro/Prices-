@@ -79,10 +79,10 @@
 
   function parseMedicineName(value) {
     const original = String(value || "").trim();
-    let working = original;
+    let working = original.replace(/[💉]/g, " ");
 
     const formPatterns = [
-      [/\b(tab|tabs|tablet|tablets)\b\.?/i, "أقراص"],
+      [/(?<![A-Za-z])(tab|tabs|tablet|tablets)\b\.?/i, "أقراص"],
       [/\b(cap|caps|capsule|capsules)\b\.?/i, "كبسولات"],
       [/\b(syrp|syrup|syrups)\b\.?/i, "شراب"],
       [/\b(amp|amps|ampoule|ampoules)\b\.?/i, "أمبول"],
@@ -97,7 +97,8 @@
       [/\b(pdr|powder)\b\.?/i, "مسحوق"],
       [/\b(inhaler)\b\.?/i, "بخاخ استنشاق"],
       [/\b(oral)\b\.?/i, "فموي"],
-      [/\b(sol|solution)\b\.?/i, "محلول"]
+          [/\b(orally|oral)\b\.?/i, "فموي"],
+       [/\b(sol|solution)\b\.?/i, "محلول"]
     ];
 
     let dosageForm = "";
@@ -121,7 +122,7 @@
       working = working.replace(match[0], " ");
     }
 
-    const brandName = working
+      .replace(/\b(IV|IM)\b/gi, " ")
       .replace(/[💉]/g, " ")
       .replace(/\s+/g, " ")
       .replace(/^[\s+\-.,]+|[\s+\-.,]+$/g, "")
