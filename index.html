@@ -3,734 +3,1199 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#172B4D">
-<link rel="manifest" href="./manifest.json">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F5F7FA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Prices">
-<title>Prices | دليل أسعار الأدوية</title>
+<link rel="manifest" href="./manifest.json">
+<title>Prices — Pharmacy Price Book</title>
 
 <style>
 :root{
- --bg:#F3F5F8;
- --panel:rgba(255,255,255,.88);
+ --bg:#F5F7FA;
+ --surface:#FFFFFF;
+ --surface2:#F0F3F7;
  --text:#172B4D;
- --muted:#718096;
- --line:rgba(23,43,77,.12);
- --accent:#36B6A0;
- --soft:#E2F3EF;
- --shadow:0 12px 35px #172B4D12;
+ --muted:#8793A5;
+ --line:#E8EDF2;
+ --teal:#36B6A0;
+ --teal-dark:#238F7D;
+ --teal-soft:#E5F6F2;
+ --gold:#F2B84B;
+ --red:#E66B6B;
+ --shadow:0 8px 28px rgba(23,43,77,.055);
+ --nav:rgba(255,255,255,.94);
 }
 [data-theme="dark"]{
- --bg:#101B2D;
- --panel:rgba(23,43,77,.90);
- --text:#F3F5F8;
- --muted:#AAB8CA;
- --line:#ffffff18;
- --accent:#36B6A0;
- --soft:#243B55;
- --shadow:0 12px 35px #0005;
+ --bg:#101827;
+ --surface:#182438;
+ --surface2:#202F45;
+ --text:#F2F5FA;
+ --muted:#9BAAC0;
+ --line:#2A3A51;
+ --teal:#42C5AC;
+ --teal-dark:#36B6A0;
+ --teal-soft:#203D3B;
+ --gold:#F2B84B;
+ --red:#F07878;
+ --shadow:0 8px 28px rgba(0,0,0,.18);
+ --nav:rgba(24,36,56,.95);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
- margin:0;background:var(--bg);color:var(--text);
- font-family:Arial,sans-serif;transition:.2s;
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ min-height:100vh;
+ padding-bottom:calc(94px + env(safe-area-inset-bottom));
+ transition:background .25s,color .25s;
 }
-header{
- padding:18px 20px;display:flex;align-items:center;
- justify-content:space-between;background:var(--panel);
- backdrop-filter:blur(18px);border-bottom:1px solid var(--line);
- position:sticky;top:0;z-index:5;
-}
-header h2{margin:0;font-size:21px}
-header p{margin:5px 0 0;color:var(--muted);font-size:12px}
-main{max-width:780px;margin:auto;padding:20px 15px 60px}
-button,input,select{font:inherit}
+button,input,textarea,select{font:inherit}
 button{cursor:pointer}
+button:active{transform:scale(.98)}
 button:disabled{opacity:.5;cursor:not-allowed}
-.iconbtn,.primary,.secondary,.danger{
- border:0;border-radius:12px;padding:12px 15px;
+button:focus-visible,input:focus-visible,textarea:focus-visible{
+ outline:3px solid rgba(54,182,160,.25);
+ outline-offset:2px;
 }
-.iconbtn{background:var(--soft);color:var(--text)}
-.welcome{padding:24px 4px}
-.welcome small{color:#F2B84B;letter-spacing:2px}
-.welcome h1{font-size:32px;line-height:1.5;margin:10px 0}
-.welcome h1 span{color:var(--accent)}
-.welcome p{color:var(--muted);font-size:14px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stat,.panel,.medicine{
- background:var(--panel);backdrop-filter:blur(18px);
- border:1px solid var(--line);border-radius:17px;
+.app-header{
+ max-width:760px;
+ margin:auto;
+ padding:calc(17px + env(safe-area-inset-top)) 20px 12px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{
+ width:43px;height:43px;border-radius:15px;
+ background:var(--text);color:#fff;
+ display:grid;place-items:center;
+ font-size:20px;font-weight:900;
+ box-shadow:0 5px 14px rgba(23,43,77,.16);
+}
+.brand-name{font-size:21px;font-weight:850;letter-spacing:-.7px}
+.brand-caption{font-size:11px;color:var(--muted);margin-top:3px}
+.header-actions{display:flex;gap:8px}
+.icon-button{
+ width:42px;height:42px;border:1px solid var(--line);
+ background:var(--surface);color:var(--text);
+ border-radius:14px;display:grid;place-items:center;
+ font-size:18px;box-shadow:var(--shadow);
+}
+main{max-width:760px;margin:auto;padding:8px 17px 35px}
+.view{display:none;animation:enter .28s ease}
+.view.active{display:block}
+@keyframes enter{
+ from{opacity:0;transform:translateY(8px)}
+ to{opacity:1;transform:translateY(0)}
+}
+.hero{
+ position:relative;overflow:hidden;
+ padding:23px 22px 21px;
+ border-radius:25px;
+ background:var(--text);color:white;
+ margin:9px 0 17px;
+ min-height:154px;
+}
+.hero:before{
+ content:"";position:absolute;
+ width:190px;height:190px;border-radius:50%;
+ background:rgba(54,182,160,.19);
+ left:-65px;top:-85px;
+}
+.hero:after{
+ content:"";position:absolute;
+ width:115px;height:115px;border:1px solid rgba(255,255,255,.13);
+ border-radius:32px;left:30px;bottom:-77px;
+ transform:rotate(35deg);
+}
+.hero-label{
+ font-size:10px;letter-spacing:2px;
+ color:#8FE0D1;font-weight:800;
+}
+.hero h1{
+ font-size:25px;line-height:1.45;
+ margin:10px 0 5px;max-width:280px;
+ position:relative;z-index:1;
+}
+.hero p{
+ color:#C3CDDA;font-size:12px;margin:0;
+ position:relative;z-index:1;
+}
+.hero-mark{
+ position:absolute;left:22px;top:38px;
+ width:76px;height:76px;border-radius:24px;
+ background:rgba(255,255,255,.08);
+ display:grid;place-items:center;
+ font-size:35px;transform:rotate(-8deg);
+}
+.stats{
+ display:grid;grid-template-columns:1fr 1fr;gap:11px;
+ margin-bottom:18px;
+}
+.stat{
+ background:var(--surface);border:1px solid var(--line);
+ border-radius:19px;padding:15px 16px;
  box-shadow:var(--shadow);
 }
-.stat{padding:17px}
-.stat span{font-size:12px;color:var(--muted)}
-.stat strong{display:block;font-size:26px;margin-top:8px}
-.panel{padding:16px;margin-top:17px}
-.section-title{font-size:17px;margin:22px 2px 12px}
-input,select{
- width:100%;padding:14px;margin-bottom:9px;
- border:1px solid var(--line);border-radius:12px;
- background:var(--panel);color:var(--text);
- outline-color:var(--accent);
+.stat-top{display:flex;align-items:center;justify-content:space-between}
+.stat-label{font-size:11px;color:var(--muted)}
+.stat-icon{
+ width:32px;height:32px;border-radius:11px;
+ background:var(--teal-soft);color:var(--teal-dark);
+ display:grid;place-items:center;font-size:16px;
 }
-input::placeholder{color:var(--muted)}
-.primary{background:var(--accent);color:#172B4D}
-.secondary{background:var(--soft);color:var(--text)}
-.danger{background:#a83e3e;color:white}
-.actions{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
-.actions button{flex:1}
-.preview{
- display:none;margin-top:12px;padding:14px;
- background:var(--soft);border-radius:13px;
- line-height:1.9;font-size:13px;white-space:pre-wrap;
- overflow-wrap:anywhere;
+.stat strong{display:block;font-size:25px;margin-top:9px;font-weight:850}
+.section-head{
+ display:flex;align-items:center;justify-content:space-between;
+ margin:23px 2px 12px;
 }
-.preview.show{display:block}
-.preview strong{color:var(--accent)}
-#list{display:grid;gap:10px}
-.medicine{
- padding:15px;display:flex;align-items:center;
- justify-content:space-between;gap:10px;
+.section-head h2{font-size:16px;margin:0;font-weight:850}
+.section-head button{
+ border:0;background:none;color:var(--teal-dark);
+ font-size:12px;font-weight:750;padding:7px;
 }
-.medicine h3{margin:0 0 7px;font-size:15px}
-.medicine p{
- margin:0;color:var(--muted);font-size:12px;line-height:1.9;
- overflow-wrap:anywhere;
+.search-wrap{position:relative;margin:0 0 15px}
+.search-wrap input{
+ width:100%;height:53px;border:1px solid var(--line);
+ background:var(--surface);color:var(--text);
+ border-radius:17px;padding:0 48px 0 43px;
+ box-shadow:var(--shadow);font-size:13px;
 }
-.price{
- font-weight:bold;color:var(--accent);
- white-space:nowrap;font-size:14px;
+.search-icon{
+ position:absolute;right:17px;top:50%;
+ transform:translateY(-50%);font-size:18px;color:var(--muted);
+ pointer-events:none;
 }
-.item-actions{display:flex;gap:5px;margin-top:9px}
-.item-actions button{
- padding:6px 9px;border:0;border-radius:8px;
- background:var(--soft);color:var(--text);font-size:12px;
+.clear-search{
+ position:absolute;left:10px;top:50%;transform:translateY(-50%);
+ border:0;background:var(--surface2);color:var(--muted);
+ width:27px;height:27px;border-radius:9px;
+ display:none;font-size:17px;
 }
-.empty{text-align:center;color:var(--muted);padding:35px 10px}
-.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tools button{width:100%}
-.note{font-size:12px;color:var(--muted);line-height:1.8}
-@media(max-width:430px){
- .welcome h1{font-size:28px}
- .medicine{align-items:flex-start;flex-direction:column}
- .price{font-size:13px}
+.clear-search.visible{display:block}
+.filter-row{
+ display:flex;gap:7px;overflow-x:auto;padding:1px 0 7px;
+ scrollbar-width:none;
+}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-chip{
+ white-space:nowrap;border:1px solid var(--line);
+ background:var(--surface);color:var(--muted);
+ border-radius:30px;padding:8px 14px;font-size:11px;
+}
+.filter-chip.active{
+ background:var(--text);border-color:var(--text);color:white;
+}
+.medicine-list{display:grid;gap:10px}
+.medicine-card{
+ display:flex;align-items:center;gap:12px;
+ background:var(--surface);border:1px solid var(--line);
+ border-radius:19px;padding:13px;
+ box-shadow:var(--shadow);
+ cursor:pointer;transition:transform .18s,border .18s;
+ min-width:0;
+}
+.medicine-card:active{transform:scale(.99)}
+.medicine-icon{
+ width:47px;height:47px;flex:0 0 47px;
+ border-radius:15px;background:var(--teal-soft);
+ color:var(--teal-dark);display:grid;place-items:center;
+ font-size:21px;
+}
+.medicine-info{flex:1;min-width:0}
+.medicine-name{
+ font-size:13px;font-weight:850;margin:0 0 5px;
+ overflow-wrap:anywhere;line-height:1.55;
+}
+.medicine-sub{
+ font-size:10px;color:var(--muted);
+ line-height:1.7;overflow-wrap:anywhere;
+}
+.medicine-price{text-align:left;flex:0 0 auto}
+.medicine-price strong{
+ display:block;color:var(--teal-dark);
+ font-size:14px;font-weight:900;white-space:nowrap;
+}
+.medicine-price span{font-size:9px;color:var(--muted)}
+.card-arrow{color:var(--muted);font-size:17px;margin-right:2px}
+.empty-state{
+ text-align:center;padding:38px 18px;
+ background:var(--surface);border:1px dashed var(--line);
+ border-radius:20px;color:var(--muted);
+}
+.empty-icon{font-size:34px;margin-bottom:10px}
+.empty-state strong{display:block;color:var(--text);font-size:14px}
+.empty-state p{font-size:11px;line-height:1.8;margin:7px 0 0}
+.quick-add{
+ width:100%;display:flex;align-items:center;gap:12px;
+ padding:15px;border:1px dashed rgba(54,182,160,.55);
+ border-radius:18px;background:var(--teal-soft);
+ color:var(--teal-dark);text-align:right;
+ margin:16px 0 3px;
+}
+.quick-add-icon{
+ width:38px;height:38px;border-radius:13px;
+ background:var(--teal);color:#102B2A;
+ display:grid;place-items:center;font-size:22px;
+}
+.quick-add strong{font-size:13px;display:block}
+.quick-add small{font-size:10px;opacity:.8;display:block;margin-top:3px}
+.page-title{font-size:23px;font-weight:900;margin:15px 2px 6px}
+.page-subtitle{font-size:12px;color:var(--muted);margin:0 2px 20px;line-height:1.8}
+.form-card{
+ background:var(--surface);border:1px solid var(--line);
+ border-radius:22px;padding:17px;box-shadow:var(--shadow);
+ margin-bottom:13px;
+}
+.field-label{
+ display:block;font-size:11px;font-weight:800;
+ margin:0 2px 8px;color:var(--text);
+}
+.field-hint{font-size:10px;color:var(--muted);margin:-3px 2px 9px;line-height:1.7}
+.field{
+ width:100%;border:1px solid var(--line);
+ background:var(--bg);color:var(--text);
+ border-radius:14px;padding:14px;
+ margin-bottom:15px;font-size:13px;
+}
+textarea.field{min-height:112px;resize:vertical;line-height:1.8}
+.field:last-child{margin-bottom:0}
+.field::placeholder{color:var(--muted);opacity:.8}
+.btn{
+ border:0;border-radius:14px;padding:13px 16px;
+ font-size:12px;font-weight:800;
+}
+.btn-primary{background:var(--teal);color:#102B2A}
+.btn-secondary{background:var(--surface2);color:var(--text)}
+.btn-danger{background:rgba(230,107,107,.13);color:var(--red)}
+.btn-block{width:100%}
+.btn-row{display:flex;gap:9px}
+.btn-row>*{flex:1}
+.preview-box{
+ display:none;background:var(--teal-soft);
+ border:1px solid rgba(54,182,160,.2);
+ border-radius:17px;padding:15px;margin-top:14px;
+}
+.preview-box.show{display:block;animation:enter .2s ease}
+.preview-title{font-size:13px;font-weight:900;margin:0 0 12px}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.preview-cell{min-width:0}
+.preview-cell label{display:block;font-size:9px;color:var(--muted);margin:0 2px 5px}
+.preview-cell input,.preview-cell select{
+ width:100%;border:1px solid var(--line);
+ border-radius:10px;padding:10px 8px;
+ background:var(--surface);color:var(--text);
+ font-size:11px;min-width:0;
+}
+.preview-actions{display:flex;gap:8px;margin-top:14px}
+.preview-actions button{flex:1}
+.bottom-nav{
+ position:fixed;z-index:20;bottom:0;left:0;right:0;
+ padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+ background:var(--nav);border-top:1px solid var(--line);
+ backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+ display:flex;justify-content:center;
+}
+.nav-inner{
+ width:100%;max-width:520px;display:grid;
+ grid-template-columns:repeat(4,1fr);gap:4px;
+}
+.nav-item{
+ border:0;background:transparent;color:var(--muted);
+ display:flex;flex-direction:column;align-items:center;
+ justify-content:center;gap:4px;padding:7px 3px;
+ border-radius:14px;font-size:9px;font-weight:700;
+}
+.nav-item .nav-icon{font-size:20px;line-height:1.2}
+.nav-item.active{color:var(--teal-dark);background:var(--teal-soft)}
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tool-button{
+ display:flex;align-items:center;gap:10px;text-align:right;
+ padding:13px 11px;background:var(--surface2);
+ border:1px solid var(--line);border-radius:15px;color:var(--text);
+ min-width:0;
+}
+.tool-symbol{
+ width:34px;height:34px;border-radius:11px;
+ background:var(--surface);display:grid;place-items:center;
+ font-size:16px;flex:0 0 34px;
+}
+.tool-button strong{display:block;font-size:10px}
+.tool-button small{display:block;font-size:9px;color:var(--muted);margin-top:3px}
+.note{font-size:10px;color:var(--muted);line-height:1.9;margin:13px 2px 0}
+.settings-card{
+ background:var(--surface);border:1px solid var(--line);
+ border-radius:19px;padding:16px;margin-bottom:11px;
+ box-shadow:var(--shadow);
+}
+.settings-row{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;padding:7px 0;
+}
+.settings-row strong{font-size:12px}
+.settings-row small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.switch{
+ width:47px;height:27px;border:0;border-radius:30px;
+ background:var(--line);padding:3px;flex:0 0 auto;
+}
+.switch:after{
+ content:"";display:block;width:21px;height:21px;
+ border-radius:50%;background:white;transition:.2s;
+}
+.switch.on{background:var(--teal)}
+.switch.on:after{transform:translateX(-20px)}
+.modal-backdrop{
+ position:fixed;inset:0;background:rgba(9,18,31,.52);
+ z-index:50;display:none;align-items:flex-end;justify-content:center;
+ padding:12px;
+}
+.modal-backdrop.show{display:flex;animation:fade .2s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{
+ width:100%;max-width:560px;max-height:88vh;overflow:auto;
+ background:var(--surface);border-radius:25px 25px 19px 19px;
+ padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+ animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(25px);opacity:.7}to{transform:translateY(0);opacity:1}}
+.modal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.modal-top h3{font-size:16px;margin:0}
+.modal-close{
+ border:0;background:var(--surface2);color:var(--text);
+ width:34px;height:34px;border-radius:11px;font-size:19px;
+}
+.detail-hero{
+ background:var(--text);color:white;border-radius:19px;
+ padding:18px;display:flex;align-items:center;gap:13px;margin-bottom:15px;
+}
+.detail-hero .medicine-icon{background:rgba(255,255,255,.13);color:#8FE0D1;width:55px;height:55px;flex-basis:55px}
+.detail-hero h2{font-size:16px;margin:0 0 5px;line-height:1.5}
+.detail-hero p{font-size:10px;color:#C3CDDA;margin:0}
+.detail-price{
+ font-size:23px;color:#8FE0D1;font-weight:900;margin-top:9px;
+}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.detail-cell{
+ background:var(--surface2);border-radius:13px;padding:12px;min-width:0;
+}
+.detail-cell small{display:block;color:var(--muted);font-size:9px;margin-bottom:6px}
+.detail-cell strong{font-size:11px;overflow-wrap:anywhere}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-actions button{flex:1}
+.toast{
+ position:fixed;z-index:100;bottom:calc(88px + env(safe-area-inset-bottom));
+ left:50%;transform:translate(-50%,15px);
+ background:var(--text);color:white;padding:12px 17px;
+ border-radius:13px;font-size:11px;opacity:0;pointer-events:none;
+ transition:.25s;white-space:nowrap;max-width:90%;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.hidden{display:none!important}
+@media(min-width:650px){
+ main{padding-left:22px;padding-right:22px}
+ .hero{padding:28px 27px}
+ .medicine-list{grid-template-columns:1fr 1fr}
+ .medicine-card{padding:14px}
+ .modal-backdrop{align-items:center}
+ .modal{border-radius:24px}
 }
 </style>
 </head>
 
 <body>
-<header>
- <div>
-  <h2>Prices</h2>
-  <p>دليل أدوية الصيدلية وأسعارها</p>
+<header class="app-header">
+ <div class="brand">
+  <div class="brand-mark">P.</div>
+  <div>
+   <div class="brand-name">Prices</div>
+   <div class="brand-caption">PHARMACY PRICE BOOK</div>
+  </div>
  </div>
- <button class="iconbtn" id="themeBtn">◐ المظهر</button>
+ <div class="header-actions">
+  <button class="icon-button" id="themeBtn" aria-label="تغيير المظهر">☼</button>
+ </div>
 </header>
 
 <main>
- <section class="welcome">
-  <small>PHARMACY PRICE BOOK</small>
-  <h1>أسعار أدويتك،<br><span>بكل سهولة.</span></h1>
-  <p>دليلك الخاص للبحث عن الأدوية وأسعارها.</p>
- </section>
-
- <section class="stats">
-  <div class="stat">
-   <span>إجمالي الأدوية</span>
-   <strong id="total">0</strong>
-  </div>
-  <div class="stat">
-   <span>التصنيفات</span>
-   <strong id="categories">0</strong>
-  </div>
- </section>
-
- <section class="panel">
-  <h3 style="margin-top:0">إضافة دواء سريعاً</h3>
-  <input id="quickInput" placeholder="مثال: Panadol 500 tab (gsk) 4000">
-  <input id="genericInput" placeholder="المادة العلمية / الوصف (اختياري)">
-  <input id="localNameInput" placeholder="الاسم العربي (اختياري)">
-
-  <div class="actions">
-   <button class="primary" id="analyzeBtn">تحليل الدواء</button>
-   <button class="secondary" id="clearBtn">مسح</button>
+ <!-- HOME -->
+ <section class="view active" id="homeView">
+  <div class="hero">
+   <div class="hero-label">YOUR PHARMACY COMPANION</div>
+   <h1>كل أسعار أدويتك<br>في مكان واحد.</h1>
+   <p>ابحث، راجع، وأدر قائمة أدويتك بسهولة.</p>
+   <div class="hero-mark">✚</div>
   </div>
 
-  <div id="preview" class="preview"></div>
-  <p class="note">
-   اكتب اسم الدواء والتركيز والشكل والشركة والسعر.
-   راجع المعاينة قبل الحفظ.
-  </p>
- </section>
-
- <section class="panel">
-  <input id="search" type="search"
-   placeholder="ابحث بالاسم التجاري أو العربي أو المادة العلمية...">
- </section>
-
- <h3 class="section-title">قائمة الأدوية</h3>
- <section id="list"></section>
-
- <section class="panel">
-  <h3 style="margin-top:0">إدارة البيانات</h3>
-
-  <div class="tools">
-   <button class="secondary" id="backupBtn">تصدير نسخة JSON</button>
-   <button class="secondary" id="importBtn">استيراد نسخة JSON</button>
-   <button class="secondary" id="csvBtn">تصدير إلى CSV</button>
-   <button class="primary" id="sheetImportBtn">استيراد Google Sheets</button>
+  <div class="stats">
+   <div class="stat">
+    <div class="stat-top">
+     <span class="stat-label">إجمالي الأدوية</span>
+     <span class="stat-icon">▤</span>
+    </div>
+    <strong id="total">0</strong>
+   </div>
+   <div class="stat">
+    <div class="stat-top">
+     <span class="stat-label">الأشكال الصيدلانية</span>
+     <span class="stat-icon">◈</span>
+    </div>
+    <strong id="categories">0</strong>
+   </div>
   </div>
 
-  <input id="importFile" type="file"
-   accept=".json,application/json" hidden>
+  <div class="search-wrap">
+   <span class="search-icon">⌕</span>
+   <input id="search" type="search" placeholder="ابحث عن دواء، مادة، شركة، سعر...">
+   <button class="clear-search" id="clearSearch" aria-label="مسح البحث">×</button>
+  </div>
 
-  <input id="sheetFile" type="file"
-   accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+  <div class="section-head">
+   <h2 id="listHeading">الأدوية</h2>
+   <button id="sortBtn">الأحدث أولاً ↕</button>
+  </div>
 
-  <div id="sheetPreview" class="preview"></div>
+  <div class="filter-row" id="filters">
+   <button class="filter-chip active" data-filter="all">الكل</button>
+   <button class="filter-chip" data-filter="أقراص">أقراص</button>
+   <button class="filter-chip" data-filter="كبسولات">كبسولات</button>
+   <button class="filter-chip" data-filter="شراب">شراب</button>
+   <button class="filter-chip" data-filter="كريم">كريم</button>
+   <button class="filter-chip" data-filter="مرهم">مرهم</button>
+   <button class="filter-chip" data-filter="أمبولات">أمبولات</button>
+   <button class="filter-chip" data-filter="قطرات">قطرات</button>
+  </div>
 
-  <p class="note">
-   استورد جدول Google Sheets بصيغة CSV أو TSV.
-  </p>
-  <p class="note">
-   البيانات محفوظة محلياً على جهازك.
-   احتفظ بنسخة احتياطية دورياً.
-  </p>
+  <div class="medicine-list" id="list"></div>
+
+  <button class="quick-add" id="homeAdd">
+   <span class="quick-add-icon">＋</span>
+   <span>
+    <strong>إضافة دواء جديد</strong>
+    <small>أدخل بيانات الدواء في فقرة واحدة</small>
+   </span>
+  </button>
+ </section>
+
+ <!-- ADD -->
+ <section class="view" id="addView">
+  <h1 class="page-title" id="addTitle">إضافة دواء</h1>
+  <p class="page-subtitle">اكتب معلومات الدواء في فقرة واحدة، وسنحاول تقسيمها إلى بيانات منظمة لمراجعتها قبل الحفظ.</p>
+
+  <div class="form-card">
+   <label class="field-label" for="medicineInput">معلومات الدواء</label>
+   <p class="field-hint">مثال: Panadol 500 mg tablets (GSK) 4000</p>
+   <textarea class="field" id="medicineInput" placeholder="اكتب اسم الدواء والتركيز والشكل والشركة والسعر..."></textarea>
+
+   <label class="field-label" for="genericInput">المادة العلمية / الوصف</label>
+   <input class="field" id="genericInput" placeholder="مثال: Paracetamol">
+
+   <label class="field-label" for="localNameInput">الاسم العربي</label>
+   <input class="field" id="localNameInput" placeholder="مثال: بنادول">
+
+   <div class="btn-row">
+    <button class="btn btn-primary" id="analyzeBtn">تحليل البيانات</button>
+    <button class="btn btn-secondary" id="resetFormBtn">مسح الحقول</button>
+   </div>
+
+   <div class="preview-box" id="preview">
+    <h3 class="preview-title">راجع البيانات قبل الحفظ</h3>
+    <div class="preview-grid" id="previewFields"></div>
+    <div class="preview-actions">
+     <button class="btn btn-primary" id="saveMedicineBtn">حفظ الدواء</button>
+     <button class="btn btn-secondary" id="cancelPreviewBtn">إلغاء</button>
+    </div>
+   </div>
+  </div>
+
+  <div class="form-card">
+   <label class="field-label" for="bulkInput">إضافة مجموعة أدوية</label>
+   <p class="field-hint">كل دواء في سطر مستقل، وبنفس صيغة الإدخال أعلاه.</p>
+   <textarea class="field" id="bulkInput" placeholder="Panadol 500 mg tab (GSK) 4000&#10;Augmentin 1 g tab (GSK) 12000"></textarea>
+   <button class="btn btn-secondary btn-block" id="bulkBtn">تحليل وإضافة المجموعة</button>
+  </div>
+ </section>
+
+ <!-- LIBRARY -->
+ <section class="view" id="libraryView">
+  <h1 class="page-title">مكتبة الأدوية</h1>
+  <p class="page-subtitle">استعرض جميع الأدوية المسجلة وابحث عنها أو صفّها حسب الشكل الصيدلاني.</p>
+  <div class="search-wrap">
+   <span class="search-icon">⌕</span>
+   <input id="librarySearch" type="search" placeholder="ابحث في مكتبة الأدوية...">
+   <button class="clear-search" id="clearLibrarySearch">×</button>
+  </div>
+  <div class="section-head">
+   <h2>كل الأدوية</h2>
+   <span id="libraryCount" style="font-size:11px;color:var(--muted)">0 دواء</span>
+  </div>
+  <div class="medicine-list" id="libraryList"></div>
+ </section>
+
+ <!-- SETTINGS -->
+ <section class="view" id="settingsView">
+  <h1 class="page-title">إدارة التطبيق</h1>
+  <p class="page-subtitle">تحكم ببياناتك واحتفظ بنسخة احتياطية آمنة.</p>
+
+  <div class="settings-card">
+   <div class="section-head" style="margin-top:0">
+    <h2>النسخ والاستيراد</h2>
+   </div>
+   <div class="tools-grid">
+    <button class="tool-button" id="backupBtn">
+     <span class="tool-symbol">⇩</span>
+     <span><strong>نسخة احتياطية</strong><small>JSON — حفظ كل البيانات</small></span>
+    </button>
+    <button class="tool-button" id="importBtn">
+     <span class="tool-symbol">⇧</span>
+     <span><strong>استعادة نسخة</strong><small>استيراد ملف JSON</small></span>
+    </button>
+    <button class="tool-button" id="csvBtn">
+     <span class="tool-symbol">▦</span>
+     <span><strong>تصدير CSV</strong><small>ملف جدول بيانات</small></span>
+    </button>
+    <button class="tool-button" id="sheetImportBtn">
+     <span class="tool-symbol">▤</span>
+     <span><strong>استيراد Sheets</strong><small>CSV أو TSV</small></span>
+    </button>
+   </div>
+   <input id="importFile" type="file" accept=".json,application/json" hidden>
+   <input id="sheetFile" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+   <div class="preview-box" id="sheetPreview"></div>
+   <p class="note">استيراد Google Sheets يضيف الأدوية إلى القائمة الحالية ولا يحذف بياناتك الموجودة.</p>
+  </div>
+
+  <div class="settings-card">
+   <div class="section-head" style="margin-top:0">
+    <h2>المظهر</h2>
+   </div>
+   <div class="settings-row">
+    <div><strong>الوضع الليلي</strong><small>تغيير ألوان التطبيق حسب تفضيلك</small></div>
+    <button class="switch" id="themeSwitch" aria-label="الوضع الليلي"></button>
+   </div>
+  </div>
+
+  <div class="settings-card">
+   <div class="section-head" style="margin-top:0">
+    <h2>منطقة البيانات</h2>
+   </div>
+   <div class="settings-row">
+    <div><strong>عدد الأدوية المسجلة</strong><small>البيانات محفوظة محلياً على هذا الجهاز</small></div>
+    <strong id="settingsTotal">0</strong>
+   </div>
+   <button class="btn btn-danger btn-block" id="clearAllBtn" style="margin-top:12px">مسح جميع الأدوية</button>
+   <p class="note">المسح نهائي على هذا الجهاز. ننصح بتصدير نسخة JSON قبل المتابعة.</p>
+  </div>
+
+  <p class="note" style="text-align:center;margin-top:22px">Prices · Pharmacy Price Book<br>نسخة محلية — بياناتك تبقى على جهازك</p>
  </section>
 </main>
 
+<nav class="bottom-nav">
+ <div class="nav-inner">
+  <button class="nav-item active" data-view="home">
+   <span class="nav-icon">⌂</span><span>الرئيسية</span>
+  </button>
+  <button class="nav-item" data-view="add">
+   <span class="nav-icon">⊕</span><span>إضافة</span>
+  </button>
+  <button class="nav-item" data-view="library">
+   <span class="nav-icon">▤</span><span>الأدوية</span>
+  </button>
+  <button class="nav-item" data-view="settings">
+   <span class="nav-icon">⚙</span><span>الإدارة</span>
+  </button>
+ </div>
+</nav>
+
+<div class="modal-backdrop" id="detailBackdrop">
+ <div class="modal">
+  <div class="modal-top">
+   <h3>تفاصيل الدواء</h3>
+   <button class="modal-close" id="closeDetail">×</button>
+  </div>
+  <div id="detailContent"></div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 const $ = id => document.getElementById(id);
-
 let medicines = [];
-try {
- const stored = JSON.parse(localStorage.getItem("prices") || "[]");
- if(Array.isArray(stored)) medicines = stored;
-} catch(e) {
- console.error("Storage error:",e);
-}
-
 let pending = null;
 let editingId = null;
+let activeFilter = "all";
+let sortMode = "newest";
+let currentView = "home";
+let detailId = null;
 
-function save(){
- try {
+try{
+ const saved = JSON.parse(localStorage.getItem("prices") || "[]");
+ if(Array.isArray(saved)) medicines = saved;
+}catch(error){console.error("Prices storage:",error)}
+
+function persist(){
+ try{
   localStorage.setItem("prices",JSON.stringify(medicines));
-  render();
- } catch(e) {
-  alert("تعذر حفظ البيانات. قد تكون مساحة التخزين ممتلئة.");
+  renderAll();
+  return true;
+ }catch(error){
+  alert("تعذر حفظ البيانات. صدّر نسخة احتياطية وتحقق من مساحة التخزين.");
+  return false;
  }
 }
-
-function safe(v){
- return String(v ?? "").replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",
-  '"':"&quot;","'":"&#39;"
+function safe(value){
+ return String(value ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
  }[c]));
 }
-
-function parseMedicine(raw){
- let s = raw.trim();
-
- const priceMatch = s.match(/(\d[\d,]*\.?\d*)\s*$/);
- if(!priceMatch) throw Error("لم يتم العثور على السعر في نهاية السطر.");
-
- const price = Number(priceMatch[1].replace(/,/g,""));
- if(!Number.isFinite(price) || price <= 0)
-  throw Error("السعر غير صحيح.");
-
- s = s.slice(0,priceMatch.index).trim();
-
- let company = "";
- const companyMatch = s.match(/\(([^)]+)\)\s*$/);
- if(companyMatch){
-  company = companyMatch[1].trim();
-  s = s.slice(0,companyMatch.index).trim();
- }
-
- const patterns = [
-  {re:/\b(tabs?|tablets?)\b\.?/i,form:"أقراص",unit:"الشريط"},
-  {re:/\b(caps?|capsules?)\b\.?/i,form:"كبسولات",unit:"الشريط"},
-  {re:/\b(syrp?|syrups?)\b\.?/i,form:"شراب",unit:"العبوة"},
-  {re:/\b(susp|suspension)\b\.?/i,form:"معلق",unit:"العبوة"},
-  {re:/\b(oint|ointment)\b\.?/i,form:"مرهم",unit:"الأنبوب"},
-  {re:/\b(cr|cream)\b\.?/i,form:"كريم",unit:"الأنبوب"},
-  {re:/\b(amp|amps|ampoule)\b\.?/i,form:"أمبولات",unit:"الأمبولة"},
-  {re:/\b(vial|vials)\b\.?/i,form:"قارورة",unit:"القارورة"},
-  {re:/\b(drops?|drop)\b\.?/i,form:"قطرات",unit:"العبوة"},
-  {re:/\b(supp|suppositories)\b\.?/i,form:"تحاميل",unit:null},
-  {re:/\b(inj|injection|injections)\b\.?/i,form:"حقن",unit:null}
- ];
-
- const found = patterns.find(p=>p.re.test(s));
- if(!found)
-  throw Error("لم أتعرف على الشكل الصيدلاني. أضف اختصاراً مثل tab أو syr أو oint.");
-
- if(found.form==="حقن")
-  throw Error("الحقن تحتاج تحديد الوحدة. استخدم amp أو vial.");
- if(found.form==="تحاميل")
-  throw Error("التحاميل تحتاج تحديد box أو piece.");
-
- s = s.replace(found.re," ").replace(/\s+/g," ").trim();
-
- const strengthMatch = s.match(/\b\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|iu|%)?\b/i);
- if(!strengthMatch)
-  throw Error("لم أتعرف على التركيز. أضف التركيز إلى السطر.");
-
- const strength = strengthMatch[0].trim();
- const name = s.replace(strengthMatch[0]," ").replace(/\s+/g," ").trim();
-
- if(!name) throw Error("اسم الدواء غير واضح.");
-
- return {
-  name,strength,form:found.form,company,
-  price,unit:found.unit
- };
+function toast(message){
+ const box=$("toast");
+ box.textContent=message;
+ box.classList.add("show");
+ clearTimeout(toast.timer);
+ toast.timer=setTimeout(()=>box.classList.remove("show"),2400);
 }
-
-function resetForm(){
- $("quickInput").value = "";
- $("genericInput").value = "";
- $("localNameInput").value = "";
- $("preview").classList.remove("show");
- pending = null;
- editingId = null;
+function normalizeDigits(value){
+ const digits="٠١٢٣٤٥٦٧٨٩";
+ return String(value ?? "").replace(/[٠-٩]/g,d=>digits.indexOf(d));
 }
-
-$("analyzeBtn").onclick = ()=>{
- try {
-  pending = parseMedicine($("quickInput").value);
-  pending.generic = $("genericInput").value.trim();
-  pending.localName = $("localNameInput").value.trim();
-
-  const p = pending;
-
-  $("preview").innerHTML =
-   "<strong>معاينة الدواء</strong><br>"+
-   "الاسم التجاري: "+safe(p.name)+"<br>"+
-   "المادة العلمية / الوصف: "+safe(p.generic)+"<br>"+
-   "الاسم العربي: "+safe(p.localName)+"<br>"+
-   "التركيز: "+safe(p.strength)+"<br>"+
-   "الشكل: "+safe(p.form)+"<br>"+
-   "الشركة: "+safe(p.company || "غير محددة")+"<br>"+
-   "السعر: "+p.price.toLocaleString("en-US")+" د.ع<br>"+
-   "وحدة السعر: "+safe(p.unit);
-
-  if(editingId !== null)
-   $("preview").innerHTML += "<br><button class='primary' id='confirmBtn'>تأكيد التعديل</button>";
-  else
-   $("preview").innerHTML += "<br><button class='primary' id='confirmBtn'>حفظ الدواء</button>";
-
-  $("preview").classList.add("show");
-  $("confirmBtn").onclick = confirmSave;
-
- } catch(e) {
-  pending = null;
-  $("preview").textContent = e.message;
-  $("preview").classList.add("show");
- }
-};
-
-function confirmSave(){
- if(!pending) return;
-
- if(editingId !== null){
-  const i = medicines.findIndex(m=>m.id===editingId);
-  if(i >= 0) medicines[i] = {...medicines[i],...pending};
- } else {
-  medicines.push({id:Date.now(),...pending});
- }
-
- resetForm();
- save();
-}
-
-$("clearBtn").onclick = resetForm;
-
-function render(){
- const q = $("search").value.toLowerCase().trim();
-
- const filtered = medicines.filter(m=>
-  [
-   m.name,m.localName,m.generic,m.description,
-   m.strength,m.form,m.company
-  ].join(" ").toLowerCase().includes(q)
- );
-
- $("total").textContent = medicines.length;
- $("categories").textContent =
-  new Set(medicines.map(m=>m.form).filter(Boolean)).size;
-
- $("list").innerHTML = "";
-
- if(!filtered.length){
-  $("list").innerHTML =
-   '<div class="empty">لا توجد أدوية لعرضها حالياً</div>';
-  return;
- }
-
- filtered.forEach(m=>{
-  const item = document.createElement("article");
-  item.className = "medicine";
-
-  const info = document.createElement("div");
-  const title = document.createElement("h3");
-  title.textContent = m.name || "بدون اسم";
-
-  const details = document.createElement("p");
-  details.textContent = [
-   m.localName,
-   m.generic ? "المادة العلمية / الوصف: "+m.generic : "",
-   m.strength,m.form,m.company
-  ].filter(Boolean).join(" · ");
-
-  const actions = document.createElement("div");
-  actions.className = "item-actions";
-
-  const edit = document.createElement("button");
-  edit.textContent = "تعديل";
-  edit.onclick = ()=>editMedicine(m.id);
-
-  const del = document.createElement("button");
-  del.textContent = "حذف";
-  del.onclick = ()=>deleteMedicine(m.id);
-
-  actions.append(edit,del);
-  info.append(title,details,actions);
-
-  const cost = document.createElement("div");
-  cost.className = "price";
-  cost.textContent =
-   Number(m.price).toLocaleString("en-US")+
-   " د.ع / "+(m.unit || "غير محدد");
-
-  item.append(info,cost);
-  $("list").append(item);
- });
-}
-
-function editMedicine(id){
- const m = medicines.find(x=>x.id===id);
- if(!m) return;
-
- const formCode = {
-  "أقراص":"tab","كبسولات":"cap","شراب":"syr",
-  "معلق":"susp","مرهم":"oint","كريم":"cream",
-  "أمبولات":"amp","قارورة":"vial","قطرات":"drop",
-  "تحاميل":"supp","حقن":"inj"
- }[m.form] || "";
-
- $("quickInput").value = [
-  m.name,m.strength,formCode,
-  m.company ? "("+m.company+")" : "",m.price
- ].filter(Boolean).join(" ");
-
- $("genericInput").value = m.generic || "";
- $("localNameInput").value = m.localName || "";
-
- editingId = id;
- pending = null;
- $("preview").classList.remove("show");
-
- window.scrollTo({top:0,behavior:"smooth"});
- $("quickInput").focus();
-}
-
-function deleteMedicine(id){
- if(!confirm("هل تريد حذف هذا الدواء؟")) return;
- medicines = medicines.filter(m=>m.id!==id);
- save();
-}
-
-function download(content,type,name){
- const blob = new Blob([content],{type});
- const url = URL.createObjectURL(blob);
- const a = document.createElement("a");
- a.href = url;
- a.download = name;
- a.click();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-
-$("backupBtn").onclick = ()=>{
- download(
-  JSON.stringify(medicines,null,2),
-  "application/json",
-  "prices-backup.json"
- );
-};
-
-$("importBtn").onclick = ()=> $("importFile").click();
-
-$("importFile").onchange = async e=>{
- const file = e.target.files[0];
- if(!file) return;
-
- try {
-  const data = JSON.parse(await file.text());
-
-  if(!Array.isArray(data) ||
-     !data.every(x=>x && typeof x==="object"))
-   throw Error();
-
-  if(confirm("سيتم استبدال القائمة الحالية بالنسخة المستوردة. هل تريد المتابعة؟")){
-   medicines = data;
-   save();
-   alert("تم استيراد النسخة الاحتياطية.");
-  }
- } catch(e) {
-  alert("ملف النسخة الاحتياطية غير صالح.");
- }
-
- e.target.value = "";
-};
-
-function parseSheetRows(text,delimiter){
- const rows = [];
- let row = [];
- let cell = "";
- let quoted = false;
-
- for(let i=0;i<text.length;i++){
-  const c = text[i];
-  const next = text[i+1];
-
-  if(c === '"' && quoted && next === '"'){
-   cell += '"';
-   i++;
-  } else if(c === '"'){
-   quoted = !quoted;
-  } else if(c === delimiter && !quoted){
-   row.push(cell);
-   cell = "";
-  } else if((c === "\n" || c === "\r") && !quoted){
-   if(c === "\r" && next === "\n") i++;
-   row.push(cell);
-   if(row.some(v=>v.trim())) rows.push(row);
-   row = [];
-   cell = "";
-  } else {
-   cell += c;
-  }
- }
-
- row.push(cell);
- if(row.some(v=>v.trim())) rows.push(row);
- return rows;
-}
-
 function normalizePrice(value){
- let s = String(value ?? "").trim();
-
- const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
- s = s.replace(/[٠-٩]/g,d=>arabicDigits.indexOf(d));
-
- s = s.replace(/[٬،,]/g,"");
- s = s.replace(/[^\d.]/g,"");
-
+ let s=normalizeDigits(value).trim();
+ s=s.replace(/[٬،,]/g,"").replace(/[^\d.]/g,"");
  if(!s || !/^\d+(\.\d+)?$/.test(s)) return null;
-
- const n = Number(s);
+ const n=Number(s);
  return Number.isFinite(n) ? n : null;
 }
-
 function normalizeText(value){
- return String(value ?? "").trim().toLowerCase().replace(/\s+/g," ");
+ return String(value ?? "").toLocaleLowerCase().trim()
+  .replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/\s+/g," ");
 }
-
-$("sheetImportBtn").onclick = ()=> $("sheetFile").click();
-
-$("sheetFile").onchange = async e=>{
- const file = e.target.files[0];
- if(!file) return;
-
- const box = $("sheetPreview");
- box.classList.add("show");
- box.textContent = "جارٍ قراءة الملف...";
-
- try {
-  const content = (await file.text()).replace(/^\uFEFF/,"");
-
-  const firstLine = content.split(/\r?\n/)[0] || "";
-  const tabs = (firstLine.match(/\t/g) || []).length;
-  const commas = (firstLine.match(/,/g) || []).length;
-  const delimiter = tabs > commas ? "\t" : ",";
-
-  const rows = parseSheetRows(content,delimiter);
-
-  if(rows.length < 2)
-   throw Error("الملف فارغ أو لا يحتوي صفوف بيانات.");
-
-  const headers = rows[0].map(v=>v.trim().toLowerCase());
-
-  const col = {
-   generic:headers.indexOf("description"),
-   name:headers.indexOf("name"),
-   localName:headers.indexOf("الاسم"),
-   price:headers.indexOf("price")
-  };
-
-  if(col.name < 0 || col.price < 0)
-   throw Error("لم أجد عمودي Name و Price في الصف الأول.");
-
-  const valid = [];
-  const issues = [];
-  const warnings = [];
-
-  rows.slice(1).forEach((r,i)=>{
-   const line = i+2;
-
-   const get = key =>
-    col[key] >= 0 ? String(r[col[key]] ?? "").trim() : "";
-
-   const name = get("name");
-   const generic = get("generic");
-   const localName = get("localName");
-   const rawPrice = get("price");
-   const price = normalizePrice(rawPrice);
-
-   if(!name){
-    issues.push(`الصف ${line}: الاسم التجاري مفقود.`);
-    return;
+const FORM_PATTERNS=[
+ {form:"أقراص",unit:"الشريط",icon:"▤",terms:["tablets","tablet","tabs","tab","قرص","اقراص","حبوب"]},
+ {form:"كبسولات",unit:"الشريط",icon:"◒",terms:["capsules","capsule","caps","cap","كبسولة","كبسولات"]},
+ {form:"شراب",unit:"العبوة",icon:"♧",terms:["syrup","syr","syp","شراب"]},
+ {form:"معلق",unit:"العبوة",icon:"♧",terms:["suspension","susp","معلق","معلق فموي"]},
+ {form:"كريم",unit:"الأنبوب",icon:"▱",terms:["cream","creams","cr","كريم","كريمه"]},
+ {form:"مرهم",unit:"الأنبوب",icon:"▰",terms:["ointment","oint","ung","مرهم"]},
+ {form:"أمبولات",unit:"الأمبولة",icon:"♢",terms:["ampoules","ampoule","amps","amp","امبول","أمبول","أمبولات"]},
+ {form:"قارورة",unit:"القارورة",icon:"♧",terms:["vials","vial","قارورة","فيال"]},
+ {form:"قطرات",unit:"العبوة",icon:"◉",terms:["drops","drop","قطرة","قطرات"]},
+ {form:"تحاميل",unit:"العلبة",icon:"◈",terms:["suppositories","suppository","supp","تحاميل","تحميلة"]},
+ {form:"حقن",unit:"العبوة",icon:"♢",terms:["injection","injections","inj","حقن","حقنة"]},
+ {form:"بخاخ",unit:"العبوة",icon:"◉",terms:["spray","inhaler","بخاخ","استنشاق"]},
+ {form:"مسحوق",unit:"العبوة",icon:"◇",terms:["powder","sachet","sachets","بودرة","مسحوق","أكياس"]},
+ {form:"جل",unit:"الأنبوب",icon:"▱",terms:["gel","جل"]},
+ {form:"غسول",unit:"العبوة",icon:"♧",terms:["wash","lotion","غسول","لوشن"]},
+ {form:"لصقات",unit:"العبوة",icon:"▧",terms:["patch","patches","لصقة","لصقات"]}
+];
+function detectForm(text){
+ const lower=normalizeText(text);
+ for(const item of FORM_PATTERNS){
+  for(const term of item.terms){
+   const t=normalizeText(term);
+   const re=new RegExp("(^|[^a-z0-9])"+t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"($|[^a-z0-9])","i");
+   if(re.test(lower) || lower.includes(t)){
+    return {...item,term};
    }
-
-   if(price === null){
-    issues.push(`الصف ${line}: السعر مفقود أو غير صالح.`);
-    return;
-   }
-
-   const rowWarnings = [];
-
-   if(price === 0)
-    rowWarnings.push("السعر صفر");
-
-   if(/^\d{1,2}[/-]\d{1,2}[/-]\d{2,4}/.test(generic))
-    rowWarnings.push("الوصف يبدو تاريخاً");
-
-   if(!generic)
-    rowWarnings.push("الوصف فارغ");
-
-   if(!localName)
-    rowWarnings.push("الاسم العربي فارغ");
-
-   if(rowWarnings.length)
-    warnings.push(`الصف ${line}: ${rowWarnings.join("، ")}`);
-
-   valid.push({
-    id:Date.now()+i+Math.floor(Math.random()*1000),
-    name,
-    generic,
-    localName,
-    price,
-    unit:"غير محدد",
-    _line:line,
-    _warnings:rowWarnings
-   });
-  });
-
-  const seen = new Set();
-  let duplicates = 0;
-
-  medicines.forEach(m=>{
-   seen.add(
-    normalizeText(m.name)+"|"+
-    normalizeText(m.generic)+"|"+
-    Number(m.price)
-   );
-  });
-
-  valid.forEach(m=>{
-   const key =
-    normalizeText(m.name)+"|"+
-    normalizeText(m.generic)+"|"+
-    Number(m.price);
-
-   if(seen.has(key)) duplicates++;
-   seen.add(key);
-  });
-
-  box.textContent =
-   `عدد صفوف البيانات: ${rows.length-1}\n`+
-   `صالحة للاستيراد: ${valid.length}\n`+
-   `صفوف مستبعدة تحتاج مراجعة: ${issues.length}\n`+
-   `تكرارات محتملة: ${duplicates}\n`+
-   `تنبيهات: ${warnings.length}\n\n`+
-   (issues.length ? "الأخطاء:\n"+issues.slice(0,20).join("\n")+"\n\n" : "")+
-   (warnings.length ? "التنبيهات:\n"+warnings.slice(0,20).join("\n") : "")+
-   (issues.length>20 || warnings.length>20 ?
-    "\nتم اختصار عرض الملاحظات؛ راجع الملف الأصلي أيضاً." : "");
-
-  if(valid.length && confirm(
-   `سيتم إضافة ${valid.length} دواء إلى قائمتك الحالية دون حذف بياناتك.\n\n`+
-   `التكرارات المحتملة: ${duplicates}\n`+
-   `الصفوف المستبعدة: ${issues.length}\n\n`+
-   `سيتم إضافة التكرارات أيضاً، ويمكن مراجعتها لاحقاً.\n\nمتابعة؟`
-  )){
-   medicines.push(
-    ...valid.map(({_line,_warnings,...m})=>m)
-   );
-   save();
-   alert(`تم استيراد ${valid.length} دواء بنجاح.`);
   }
+ }
+ return null;
+}
+function parseMedicine(raw,externalPrice){
+ let text=String(raw ?? "").trim();
+ if(!text) throw Error("اكتب معلومات الدواء أولاً.");
 
- } catch(err) {
-  box.textContent = "تعذر قراءة الملف: "+err.message;
-  alert("تعذر قراءة الملف: "+err.message);
+ let price=externalPrice!==undefined && externalPrice!==null && externalPrice!==""
+  ? normalizePrice(externalPrice) : null;
+
+ if(price===null){
+  const match=text.match(/(?:^|\s)(\d[\d٠-٩٬،,.]*)\s*(?:د\.?ع|iqd)?\s*$/i);
+  if(!match) throw Error("لم أتعرف على السعر. ضعه في نهاية الفقرة.");
+  price=normalizePrice(match[1]);
+  text=text.slice(0,match.index).trim();
+ }
+ if(price===null) throw Error("السعر غير صالح.");
+
+ let company="";
+ const companyMatches=[...text.matchAll(/\(([^)]+)\)/g)];
+ if(companyMatches.length){
+  const last=companyMatches[companyMatches.length-1];
+  company=last[1].trim();
+  text=text.replace(last[0]," ").replace(/\s+/g," ").trim();
  }
 
- e.target.value = "";
-};
+ const detected=detectForm(text);
+ let form=detected?.form || "";
+ let unit=detected?.unit || "";
+ if(detected){
+  const escaped=detected.term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const re=new RegExp("(^|[^a-z0-9])"+escaped+"($|[^a-z0-9])","i");
+  text=text.replace(re," ").replace(new RegExp(escaped,"i")," ");
+ }
 
-$("csvBtn").onclick = ()=>{
- const rows = [
-  ["Description","Name","الاسم","Price"],
-  ...medicines.map(m=>[
-   m.generic || "",
-   m.name || "",
-   m.localName || "",
-   m.price ?? ""
-  ])
- ];
+ const strengthRe=/\b\d+(?:\.\d+)?\s*(?:mg|mcg|μg|g|kg|ml|l|iu|u|%)\b|\b\d+(?:\.\d+)?\s*(?:مغ|ملغ|ميكروغرام|غرام|جم|مل|وحدة|٪)\b|\b\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?\s*(?:mg|mcg|ml|g|iu)\b/ig;
+ const strengths=[...text.matchAll(strengthRe)];
+ const strength=strengths.map(x=>x[0].replace(/\s+/g," ").trim()).join(" / ");
+ strengths.reverse().forEach(x=>{text=text.replace(x[0]," ")});
+ text=text.replace(/\s+/g," ").replace(/^[\s,،\-–]+|[\s,،\-–]+$/g,"").trim();
 
- const csv = "\uFEFF"+rows.map(r=>
-  r.map(v=>'"'+String(v ?? "").replace(/"/g,'""')+'"').join(",")
- ).join("\r\n");
-
- download(
-  csv,
-  "text/csv;charset=utf-8",
-  "prices.csv"
- );
-};
-
-$("search").addEventListener("input",render);
-
-const savedTheme = localStorage.getItem("prices-theme");
-
-if(savedTheme)
- document.documentElement.dataset.theme = savedTheme;
-else if(matchMedia("(prefers-color-scheme: dark)").matches)
- document.documentElement.dataset.theme = "dark";
-
-$("themeBtn").onclick = ()=>{
- const next =
-  document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-
- document.documentElement.dataset.theme = next;
- localStorage.setItem("prices-theme",next);
-};
-
-if("serviceWorker" in navigator){
- window.addEventListener("load",()=>{
-  navigator.serviceWorker
-   .register("./service-worker.js")
-   .catch(error=>console.error("PWA:",error));
- });
+ if(!text) throw Error("اسم الدواء غير واضح. اكتب الاسم التجاري.");
+ return {
+  name:text,
+  strength,
+  form,
+  company,
+  price,
+  unit:unit || "غير محدد",
+  generic:"",
+  localName:"",
+  description:""
+ };
+}
+function displayName(m){
+ return [m.name,m.strength,m.form].filter(Boolean).join(" ");
+}
+function medicineIcon(form){
+ const found=FORM_PATTERNS.find(x=>x.form===form);
+ return found?.icon || "✚";
+}
+function formatPrice(value){
+ const n=Number(value);
+ return Number.isFinite(n) ? n.toLocaleString("en-US") : "—";
 }
 
-render();
+function showView(name){
+ currentView=name;
+ document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+ const target=$(name+"View");
+ if(target) target.classList.add("active");
+ document.querySelectorAll(".nav-item").forEach(b=>{
+  b.classList.toggle("active",b.dataset.view===name);
+ });
+ window.scrollTo({top:0,behavior:"smooth"});
+ if(name==="library") renderLibrary();
+}
+document.querySelectorAll(".nav-item").forEach(button=>{
+ button.addEventListener("click",()=>showView(button.dataset.view));
+});
+$("homeAdd").onclick=()=>{resetForm();showView("add")};
+
+function renderMedicineCard(m){
+ const card=document.createElement("article");
+ card.className="medicine-card";
+ card.innerHTML=`
+  <div class="medicine-icon">${medicineIcon(m.form)}</div>
+  <div class="medicine-info">
+   <h3 class="medicine-name">${safe(displayName(m) || "بدون اسم")}</h3>
+   <div class="medicine-sub">${safe([m.localName,m.generic,m.company].filter(Boolean).join(" · ") || "اضغط لعرض التفاصيل")}</div>
+  </div>
+  <div class="medicine-price">
+   <strong>${formatPrice(m.price)}</strong>
+   <span>د.ع / ${safe(m.unit || "—")}</span>
+  </div>
+  <span class="card-arrow">‹</span>`;
+ card.addEventListener("click",()=>openDetails(m.id));
+ return card;
+}
+function getFiltered(query,filter){
+ let list=[...medicines];
+ const q=normalizeText(query);
+ if(q){
+  list=list.filter(m=>{
+   const all=[
+    m.name,m.localName,m.generic,m.description,m.strength,m.form,
+    m.company,m.price,m.unit,m.dosage,m.notes
+   ].map(normalizeText).join(" ");
+   return all.includes(q);
+  });
+ }
+ if(filter && filter!=="all") list=list.filter(m=>m.form===filter);
+ if(sortMode==="name") list.sort((a,b)=>String(a.name||"").localeCompare(String(b.name||"")));
+ else if(sortMode==="priceLow") list.sort((a,b)=>Number(a.price)-Number(b.price));
+ else if(sortMode==="priceHigh") list.sort((a,b)=>Number(b.price)-Number(a.price));
+ else list.sort((a,b)=>Number(b.id||0)-Number(a.id||0));
+ return list;
+}
+function renderList(target,list,emptyTitle,emptyText){
+ target.innerHTML="";
+ if(!list.length){
+  target.innerHTML=`<div class="empty-state">
+   <div class="empty-icon">⌕</div>
+   <strong>${safe(emptyTitle)}</strong>
+   <p>${safe(emptyText)}</p>
+  </div>`;
+  return;
+ }
+ list.forEach(m=>target.appendChild(renderMedicineCard(m)));
+}
+function renderHome(){
+ $("total").textContent=medicines.length.toLocaleString("en-US");
+ $("categories").textContent=new Set(medicines.map(m=>m.form).filter(Boolean)).size;
+ const q=$("search").value;
+ const list=getFiltered(q,activeFilter);
+ $("listHeading").textContent=q ? "نتائج البحث" : "الأدوية";
+ renderList($("list"),list,"لا توجد نتائج","جرّب تغيير كلمة البحث أو اختيار تصنيف آخر.");
+ $("clearSearch").classList.toggle("visible",!!q);
+}
+function renderLibrary(){
+ const q=$("librarySearch").value;
+ const list=getFiltered(q,"all");
+ $("libraryCount").textContent=list.length+" دواء";
+ renderList($("libraryList"),list,"المكتبة فارغة","أضف دواء جديداً ليظهر هنا.");
+ $("clearLibrarySearch").classList.toggle("visible",!!q);
+}
+function renderAll(){
+ renderHome();
+ renderLibrary();
+ $("settingsTotal").textContent=medicines.length;
+}
+$("search").addEventListener("input",renderHome);
+$("librarySearch").addEventListener("input",renderLibrary);
+$("clearSearch").onclick=()=>{$("search").value="";renderHome();$("search").focus()};
+$("clearLibrarySearch").onclick=()=>{$("librarySearch").value="";renderLibrary();$("librarySearch").focus()};
+$("filters").addEventListener("click",e=>{
+ const button=e.target.closest("[data-filter]");
+ if(!button)return;
+ activeFilter=button.dataset.filter;
+ document.querySelectorAll(".filter-chip").forEach(x=>x.classList.toggle("active",x===button));
+ renderHome();
+});
+$("sortBtn").onclick=()=>{
+ const modes=["newest","name","priceLow","priceHigh"];
+ const labels=["الأحدث أولاً ↕","الاسم أ–ي","السعر: الأقل","السعر: الأعلى"];
+ const i=(modes.indexOf(sortMode)+1)%modes.length;
+ sortMode=modes[i];
+ $("sortBtn").textContent=labels[i];
+ renderHome();
+};
+
+function resetForm(){
+ $("medicineInput").value="";
+ $("genericInput").value="";
+ $("localNameInput").value="";
+ $("preview").classList.remove("show");
+ $("previewFields").innerHTML="";
+ pending=null;
+ editingId=null;
+ $("addTitle").textContent="إضافة دواء";
+}
+$("resetFormBtn").onclick=resetForm;
+$("cancelPreviewBtn").onclick=()=>{$("preview").classList.remove("show");pending=null};
+function buildPreview(data){
+ pending={...data};
+ const fields=[
+  ["name","الاسم التجاري","text"],
+  ["strength","التركيز","text"],
+  ["form","الشكل الصيدلاني","select"],
+  ["generic","المادة العلمية","text"],
+  ["company","الشركة المصنعة","text"],
+  ["price","السعر","number"],
+  ["unit","وحدة التسعير","text"],
+  ["localName","الاسم العربي","text"]
+ ];
+ $("previewFields").innerHTML="";
+ fields.forEach(([key,label,type])=>{
+  const wrap=document.createElement("div");
+  wrap.className="preview-cell";
+  const lab=document.createElement("label");
+  lab.textContent=label;
+  let input;
+  if(type==="select"){
+   input=document.createElement("select");
+   const options=["","أقراص","كبسولات","شراب","معلق","كريم","مرهم","أمبولات","قارورة","قطرات","تحاميل","حقن","بخاخ","مسحوق","جل","غسول","لصقات","أخرى"];
+   options.forEach(v=>{
+    const op=document.createElement("option");
+    op.value=v;op.textContent=v||"اختر الشكل";
+    input.appendChild(op);
+   });
+  }else{
+   input=document.createElement("input");
+   input.type=type;
+  }
+  input.value=data[key] ?? "";
+  input.dataset.key=key;
+  input.addEventListener("input",()=>{pending[key]=input.value});
+  input.addEventListener("change",()=>{pending[key]=input.value});
+  wrap.append(lab,input);
+  $("previewFields").appendChild(wrap);
+ });
+ $("preview").classList.add("show");
+ $("preview").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("analyzeBtn").onclick=()=>{
+ try{
+  const data=parseMedicine($("medicineInput").value);
+  data.generic=$("genericInput").value.trim();
+  data.localName=$("localNameInput").value.trim();
+  buildPreview(data);
+ }catch(error){toast(error.message)}
+};
+function savePending(){
+ if(!pending)return;
+ const item={
+  ...pending,
+  id:editingId ?? Date.now(),
+  price:normalizePrice(pending.price)
+ };
+ if(!item.name || !String(item.name).trim()){toast("اسم الدواء مطلوب");return}
+ if(item.price===null){toast("أدخل سعراً صحيحاً");return}
+ if(editingId!==null){
+  const index=medicines.findIndex(m=>String(m.id)===String(editingId));
+  if(index>=0) medicines[index]={...medicines[index],...item};
+ }else medicines.push(item);
+ if(persist()){
+  resetForm();
+  showView("home");
+  toast(editingId!==null?"تم تحديث الدواء":"تم حفظ الدواء");
+ }
+}
+$("saveMedicineBtn").onclick=savePending;
+
+function editMedicine(id){
+ const m=medicines.find(x=>String(x.id)===String(id));
+ if(!m)return;
+ editingId=id;
+ $("addTitle").textContent="تعديل بيانات الدواء";
+ $("medicineInput").value=[m.name,m.strength,m.form,m.company?"("+m.company+")":"",m.price].filter(Boolean).join(" ");
+ $("genericInput").value=m.generic||m.description||"";
+ $("localNameInput").value=m.localName||"";
+ const copy={...m};
+ buildPreview(copy);
+ showView("add");
+}
+function deleteMedicine(id){
+ const m=medicines.find(x=>String(x.id)===String(id));
+ if(!m)return;
+ if(!confirm("هل تريد حذف "+(m.name||"هذا الدواء")+"؟"))return;
+ medicines=medicines.filter(x=>String(x.id)!==String(id));
+ persist();
+ closeDetails();
+ toast("تم حذف الدواء");
+}
+function openDetails(id){
+ const m=medicines.find(x=>String(x.id)===String(id));
+ if(!m)return;
+ detailId=id;
+ const rows=[
+  ["الاسم التجاري",m.name],
+  ["الاسم العربي",m.localName],
+  ["التركيز",m.strength],
+  ["الشكل الصيدلاني",m.form],
+  ["المادة العلمية",m.generic],
+  ["الشركة المصنعة",m.company],
+  ["السعر",formatPrice(m.price)+" د.ع"],
+  ["وحدة التسعير",m.unit],
+  ["الوصف",m.description],
+  ["ملاحظات",m.notes]
+ ].filter(x=>x[1]!==undefined && x[1]!==null && String(x[1]).trim()!=="");
+ $("detailContent").innerHTML=`
+  <div class="detail-hero">
+   <div class="medicine-icon">${medicineIcon(m.form)}</div>
+   <div>
+    <h2>${safe(displayName(m))}</h2>
+    <p>${safe(m.company||"الشركة غير محددة")}</p>
+    <div class="detail-price">${formatPrice(m.price)} <small style="font-size:10px">د.ع</small></div>
+   </div>
+  </div>
+  <div class="detail-grid">
+   ${rows.map(([label,value])=>`<div class="detail-cell"><small>${safe(label)}</small><strong>${safe(value)}</strong></div>`).join("")}
+  </div>
+  <div class="modal-actions">
+   <button class="btn btn-primary" id="detailEdit">تعديل</button>
+   <button class="btn btn-danger" id="detailDelete">حذف</button>
+  </div>`;
+ $("detailBackdrop").classList.add("show");
+ $("detailEdit").onclick=()=>{closeDetails();editMedicine(id)};
+ $("detailDelete").onclick=()=>deleteMedicine(id);
+}
+function closeDetails(){
+ $("detailBackdrop").classList.remove("show");
+ detailId=null;
+}
+$("closeDetail").onclick=closeDetails;
+$("detailBackdrop").addEventListener("click",e=>{
+ if(e.target===$("detailBackdrop"))closeDetails();
+});
+
+$("bulkBtn").onclick=()=>{
+ const lines=$("bulkInput").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ if(!lines.length){toast("أدخل دواء واحداً على الأقل");return}
+ const good=[],bad=[];
+ lines.forEach((line,index)=>{
+  try{good.push({...parseMedicine(line),id:Date.now()+index,localName:"",generic:""})}
+  catch(error){bad.push("السطر "+(index+1)+": "+error.message)}
+ });
+ if(!good.length){alert("لم يتم تحليل أي دواء:\n"+bad.join("\n"));return}
+ const message="تم تحليل "+good.length+" دواء.\nتعذر تحليل "+bad.length+" سطر.\n\nهل تريد إضافة الأدوية التي تم تحليلها؟";
+ if(confirm(message)){
+  medicines.push(...good);
+  if(persist()){
+   $("bulkInput").value="";
+   toast("تمت إضافة "+good.length+" أدوية");
+  }
+ }
+ if(bad.length)alert("الأسطر التي تحتاج مراجعة:\n"+bad.slice(0,15).join("\n"));
+};
+
+function downloadFile(content,type,name){
+ const blob=new Blob([content],{type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=name;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1200);
+}
+$("backupBtn").onclick=()=>{
+ downloadFile(JSON.stringify(medicines,null,2),"application/json","prices-backup.json");
+ toast("تم تجهيز النسخة الاحتياطية");
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const data=JSON.parse(await file.text());
+  if(!Array.isArray(data)||!data.every(x=>x&&typeof x==="object"))throw Error();
+  if(confirm("سيتم استبدال القائمة الحالية بالنسخة المستوردة. تأكد من حفظ نسخة حالية أولاً. متابعة؟")){
+   medicines=data;
+   persist();
+   toast("تمت استعادة النسخة");
+  }
+ }catch(error){alert("ملف النسخة الاحتياطية غير صالح")}
+ e.target.value="";
+};
+
+function parseDelimited(text,delimiter){
+ const rows=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i],next=text[i+1];
+  if(c==='"'&&quoted&&next==='"'){cell+='"';i++}
+  else if(c==='"')quoted=!quoted;
+  else if(c===delimiter&&!quoted){row.push(cell);cell=""}
+  else if((c==="\n"||c==="\r")&&!quoted){
+   if(c==="\r"&&next==="\n")i++;
+   row.push(cell);if(row.some(v=>v.trim()))rows.push(row);
+   row=[];cell="";
+  }else cell+=c;
+ }
+ row.push(cell);if(row.some(v=>v.trim()))rows.push(row);
+ return rows;
+}
+function headerIndex(headers,names){
+ return headers.findIndex(h=>names.includes(normalizeText(h)));
+}
+$("sheetImportBtn").onclick=()=>$("sheetFile").click();
+$("sheetFile").onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ const box=$("sheetPreview");
+ box.classList.add("show");box.textContent="جارٍ قراءة الملف...";
+ try{
+  const content=(await file.text()).replace(/^\uFEFF/,"");
+  const first=content.split(/\r?\n/)[0]||"";
+  const delimiter=(first.match(/\t/g)||[]).length>(first.match(/,/g)||[]).length?"\t":",";
+  const rows=parseDelimited(content,delimiter);
+  if(rows.length<2)throw Error("الملف لا يحتوي بيانات كافية.");
+  const headers=rows[0].map(x=>x.trim());
+  const nameCol=headerIndex(headers,["name"]);
+  const priceCol=headerIndex(headers,["price"]);
+  const descCol=headerIndex(headers,["description"]);
+  const arabicCol=headerIndex(headers,["الاسم","الاسم العربي","arabic name"]);
+  if(nameCol<0||priceCol<0)throw Error("يجب وجود عمودي Name و Price.");
+  const good=[],issues=[],warnings=[];
+  rows.slice(1).forEach((r,i)=>{
+   const line=i+2;
+   const get=c=>c>=0?String(r[c]??"").trim():"";
+   const name=get(nameCol),price=get(priceCol);
+   if(!name){issues.push("الصف "+line+": الاسم مفقود");return}
+   if(normalizePrice(price)===null){issues.push("الصف "+line+": السعر غير صالح");return}
+   try{
+    const item=parseMedicine(name,price);
+    item.generic=get(descCol);
+    item.localName=get(arabicCol);
+    item.id=Date.now()+i;
+    if(!item.form)warnings.push("الصف "+line+": لم يتم التعرف على الشكل الصيدلاني");
+    if(!item.strength)warnings.push("الصف "+line+": لم يتم التعرف على التركيز");
+    good.push(item);
+   }catch(error){issues.push("الصف "+line+": "+error.message)}
+  });
+  const keys=new Set(medicines.map(m=>normalizeText(m.name)+"|"+normalizeText(m.strength)+"|"+Number(m.price)));
+  let duplicates=0;
+  good.forEach(m=>{
+   const key=normalizeText(m.name)+"|"+normalizeText(m.strength)+"|"+Number(m.price);
+   if(keys.has(key))duplicates++;
+   keys.add(key);
+  });
+  box.innerHTML=
+   "<strong>ملخص الاستيراد</strong><br>"+
+   "إجمالي الصفوف: "+(rows.length-1)+"<br>"+
+   "قابلة للإضافة: "+good.length+"<br>"+
+   "أخطاء: "+issues.length+"<br>"+
+   "تنبيهات: "+warnings.length+"<br>"+
+   "تكرارات محتملة: "+duplicates+
+   (issues.length?"<br><br><strong>الأخطاء:</strong><br>"+issues.slice(0,15).map(safe).join("<br>"):"")+
+   (warnings.length?"<br><br><strong>التنبيهات:</strong><br>"+warnings.slice(0,15).map(safe).join("<br>"):"");
+  if(good.length&&confirm("سيتم إضافة "+good.length+" دواء إلى القائمة الحالية دون حذف البيانات الموجودة.\nالتكرارات المحتملة: "+duplicates+"\nهل تريد المتابعة؟")){
+   medicines.push(...good);
+   persist();
+   toast("تم استيراد "+good.length+" دواء");
+  }
+ }catch(error){
+  box.textContent="تعذر الاستيراد: "+error.message;
+  alert("تعذر الاستيراد: "+error.message);
+ }
+ e.target.value="";
+};
+$("csvBtn").onclick=()=>{
+ const headers=["Description","Name","الاسم","Price","Strength","Form","Company","Unit"];
+ const rows=[headers,...medicines.map(m=>[
+  m.generic||m.description||"",m.name||"",m.localName||"",m.price??"",
+  m.strength||"",m.form||"",m.company||"",m.unit||""
+ ])];
+ const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ downloadFile(csv,"text/csv;charset=utf-8","prices.csv");
+};
+
+$("clearAllBtn").onclick=()=>{
+ if(!medicines.length){toast("القائمة فارغة بالفعل");return}
+ const first=confirm("تنبيه: سيتم حذف جميع الأدوية من هذا الجهاز.\nهل حفظت نسخة JSON احتياطية؟");
+ if(!first)return;
+ const second=prompt('للتأكيد النهائي اكتب: مسح الكل');
+ if(second!=="مسح الكل"){toast("تم إلغاء العملية");return}
+ medicines=[];
+ if(persist())toast("تم مسح قائمة الأدوية");
+};
+
+function setTheme(theme){
+ document.documentElement.dataset.theme=theme;
+ localStorage.setItem("prices-theme",theme);
+ const dark=theme==="dark";
+ $("themeBtn").textContent=dark?"☾":"☼";
+ $("themeSwitch").classList.toggle("on",dark);
+ const meta=document.querySelector('meta[name="theme-color"]');
+ if(meta)meta.content=dark?"#101827":"#F5F7FA";
+}
+const initialTheme=localStorage.getItem("prices-theme")||
+ (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+setTheme(initialTheme);
+$("themeBtn").onclick=()=>{
+ setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+};
+$("themeSwitch").onclick=()=>{
+ setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+};
+
+renderAll();
+if("serviceWorker" in navigator){
+ window.addEventListener("load",()=>{
+  navigator.serviceWorker.register("./service-worker.js")
+   .catch(error=>console.error("Service worker:",error));
+ });
+}
 </script>
 </body>
 </html>
