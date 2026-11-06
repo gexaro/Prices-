@@ -168,14 +168,13 @@ function parseMedicine(raw){
  return {name,strength,form:found.form,company,price,unit:found.unit};
 }
 
-pending=parseMedicine($("quickInput").value);
-pending.generic=$("genericInput").value.trim();
-pending.localName=$("localNameInput").value.trim();
  try{
   pending=parseMedicine($("quickInput").value);
   const p=pending;
   $("preview").innerHTML=
    "<strong>معاينة الدواء</strong><br>"+
+  pending.generic=$("genericInput").value.trim();
+pending.localName=$("localNameInput").value.trim();
    "الاسم: "+safe(p.name)+"<br>"+
    "التركيز: "+safe(p.strength)+"<br>"+
    "الشكل: "+safe(p.form)+"<br>"+
@@ -201,13 +200,14 @@ function confirmSave(){
  }else{
   medicines.push({id:Date.now(),...pending});
   $("genericInput").value="";
-$("localNameInput").value="";
- }
+
  editingId=null;
  pending=null;
  $("quickInput").value="";
  $("preview").classList.remove("show");
  save();
+$("genericInput").value="";
+$("localNameInput").value="";
 }
 
 $("clearBtn").onclick=()=>{
@@ -258,8 +258,6 @@ details.textContent=[
   const cost=document.createElement("div");
   cost.className="price";
   cost.textContent=Number(m.price).toLocaleString("en-US")+" د.ع / "+(m.unit||"غير محدد");
-  $("genericInput").value=m.generic||"";
-$("localNameInput").value=m.localName||"";
   item.append(info,cost);
   $("list").append(item);
  });
@@ -272,7 +270,9 @@ function editMedicine(id){
  $("quickInput").value=[m.name,m.strength,formCode,m.company?"("+m.company+")":"",m.price].filter(Boolean).join(" ");
  editingId=id;
  $("preview").classList.remove("show");
- window.scrollTo({top:0,behavior:"smooth"});
+ $("genericInput").value=m.generic||"";
+$("localNameInput").value=m.localName||"";
+window.scrollTo({top:0,behavior:"smooth"});
  $("quickInput").focus();
 }
 
