@@ -79,6 +79,8 @@ input::placeholder{color:var(--muted)}
 <section class="panel">
 <h3 style="margin-top:0">إضافة دواء سريعاً</h3>
 <input id="quickInput" placeholder="مثال: Panadol 500 tab (gsk) 4000">
+<input id="genericInput" placeholder="المادة العلمية / الوصف (اختياري)">
+<input id="localNameInput" placeholder="الاسم العربي (اختياري)">
 <div class="actions">
 <button class="primary" id="analyzeBtn">تحليل الدواء</button>
 <button class="secondary" id="clearBtn">مسح</button>
@@ -166,7 +168,9 @@ function parseMedicine(raw){
  return {name,strength,form:found.form,company,price,unit:found.unit};
 }
 
-$("analyzeBtn").onclick=()=>{
+pending=parseMedicine($("quickInput").value);
+pending.generic=$("genericInput").value.trim();
+pending.localName=$("localNameInput").value.trim();
  try{
   pending=parseMedicine($("quickInput").value);
   const p=pending;
@@ -196,6 +200,8 @@ function confirmSave(){
   if(i>=0) medicines[i]={...medicines[i],...pending};
  }else{
   medicines.push({id:Date.now(),...pending});
+  $("genericInput").value="";
+$("localNameInput").value="";
  }
  editingId=null;
  pending=null;
@@ -252,6 +258,8 @@ details.textContent=[
   const cost=document.createElement("div");
   cost.className="price";
   cost.textContent=Number(m.price).toLocaleString("en-US")+" د.ع / "+(m.unit||"غير محدد");
+  $("genericInput").value=m.generic||"";
+$("localNameInput").value=m.localName||"";
   item.append(info,cost);
   $("list").append(item);
  });
