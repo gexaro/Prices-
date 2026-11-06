@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "prices-v1";
+const CACHE_NAME = "prices-v2";
 
 const APP_FILES = [
   "./",
