@@ -171,7 +171,8 @@
       const description = get("Description");
       const name = get("Name");
       const localName = get("الاسم");
-      const rawPrice = get("Price");
+           const parsedName = parseMedicineName(name);
+       const rawPrice = get("Price");
 
       const price = cleanPrice(rawPrice);
       const issues = [];
