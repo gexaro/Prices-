@@ -120,12 +120,12 @@
       working = working.replace(match[0], " ");
     }
 
+    const brandName = working
       .replace(/\b(IV|IM)\b/gi, " ")
       .replace(/[💉]/g, " ")
       .replace(/\s+/g, " ")
       .replace(/^[\s+\-.,]+|[\s+\-.,]+$/g, "")
       .trim();
-
     return {
       original,
       brandName,
