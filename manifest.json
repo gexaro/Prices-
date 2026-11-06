@@ -1,0 +1,14 @@
+
+{
+  "name": "Prices - دليل أسعار الأدوية",
+  "short_name": "Prices",
+  "description": "دليل أدوية الصيدلية وأسعارها",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef2ee",
+  "theme_color": "#173d35"
+}
