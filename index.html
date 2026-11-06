@@ -653,113 +653,174 @@ function toast(message){
  clearTimeout(toast.timer);
  toast.timer=setTimeout(()=>box.classList.remove("show"),2400);
 }
+
 function normalizeDigits(value){
  const digits="٠١٢٣٤٥٦٧٨٩";
  return String(value ?? "").replace(/[٠-٩]/g,d=>digits.indexOf(d));
 }
+
 function normalizePrice(value){
  let s=normalizeDigits(value).trim();
- s=s.replace(/[٬،,]/g,"").replace(/[^\d.]/g,"");
- if(!s || !/^\d+(\.\d+)?$/.test(s)) return null;
+ s=s.replace(/[*^'’"“”‘’]/g,"");
+ s=s.replace(/\s*(?:العلبة|د\.?\s*ع|IQD)\s*$/i,"");
+ s=s.replace(/[٬،,]/g,"").replace(/\s+/g,"");
+ if(!s || !/^\d+(?:\.\d+)?$/.test(s))return null;
  const n=Number(s);
- return Number.isFinite(n) ? n : null;
+ return Number.isFinite(n)?n:null;
 }
+
 function normalizeText(value){
  return String(value ?? "").toLocaleLowerCase().trim()
   .replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/\s+/g," ");
 }
+
 const FORM_PATTERNS=[
  {form:"أقراص",unit:"الشريط",icon:"▤",terms:["tablets","tablet","tabs","tab","قرص","اقراص","حبوب"]},
  {form:"كبسولات",unit:"الشريط",icon:"◒",terms:["capsules","capsule","caps","cap","كبسولة","كبسولات"]},
- {form:"شراب",unit:"العبوة",icon:"♧",terms:["syrup","syr","syp","شراب"]},
+ {form:"شراب",unit:"العبوة",icon:"♧",terms:["syrup","syr","syp","syrp","شراب"]},
  {form:"معلق",unit:"العبوة",icon:"♧",terms:["suspension","susp","معلق","معلق فموي"]},
- {form:"كريم",unit:"الأنبوب",icon:"▱",terms:["cream","creams","cr","كريم","كريمه"]},
+ {form:"كريم",unit:"الأنبوب",icon:"▱",terms:["cream","creams","crm","cr","كريم","كريمه"]},
  {form:"مرهم",unit:"الأنبوب",icon:"▰",terms:["ointment","oint","ung","مرهم"]},
  {form:"أمبولات",unit:"الأمبولة",icon:"♢",terms:["ampoules","ampoule","amps","amp","امبول","أمبول","أمبولات"]},
  {form:"قارورة",unit:"القارورة",icon:"♧",terms:["vials","vial","قارورة","فيال"]},
- {form:"قطرات",unit:"العبوة",icon:"◉",terms:["drops","drop","قطرة","قطرات"]},
- {form:"تحاميل",unit:"العلبة",icon:"◈",terms:["suppositories","suppository","supp","تحاميل","تحميلة"]},
+ {form:"قطرات",unit:"العبوة",icon:"◉",terms:["drops","drop","drp","قطرة","قطرات"]},
+ {form:"تحاميل",unit:"العلبة",icon:"◈",terms:["suppositories","suppository","supp","v.supp","تحاميل","تحميلة"]},
  {form:"حقن",unit:"العبوة",icon:"♢",terms:["injection","injections","inj","حقن","حقنة"]},
  {form:"بخاخ",unit:"العبوة",icon:"◉",terms:["spray","inhaler","بخاخ","استنشاق"]},
- {form:"مسحوق",unit:"العبوة",icon:"◇",terms:["powder","sachet","sachets","بودرة","مسحوق","أكياس"]},
- {form:"جل",unit:"الأنبوب",icon:"▱",terms:["gel","جل"]},
+ {form:"مسحوق",unit:"العبوة",icon:"◇",terms:["powder","pdr","sachet","sachets","بودرة","مسحوق","أكياس"]},
+ {form:"جل",unit:"الأنبوب",icon:"▱",terms:["emulgel","oral-gel","gel","جل"]},
  {form:"غسول",unit:"العبوة",icon:"♧",terms:["wash","lotion","غسول","لوشن"]},
- {form:"لصقات",unit:"العبوة",icon:"▧",terms:["patch","patches","لصقة","لصقات"]}
+ {form:"لصقات",unit:"العبوة",icon:"▧",terms:["patch","patches","لصقة","لصقات"]},
+ {form:"محلول",unit:"العبوة",icon:"◉",terms:["solution","soln","sol","محلول"]},
+ {form:"صابون",unit:"القطعة",icon:"▱",terms:["soap","صابون"]},
+ {form:"سرنجة",unit:"السرنجة",icon:"♢",terms:["syringe","سرنجة"]}
 ];
-function detectForm(text){
- const lower=normalizeText(text);
- for(const item of FORM_PATTERNS){
-  for(const term of item.terms){
-   const t=normalizeText(term);
-   const re=new RegExp("(^|[^a-z0-9])"+t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"($|[^a-z0-9])","i");
-   if(re.test(lower) || lower.includes(t)){
-    return {...item,term};
-   }
-  }
+
+function formTermRegex(term){
+ const t=normalizeText(term).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+ if(/[a-z]/i.test(t)){
+  return new RegExp("(^|[^a-z])("+t+")(?=$|[^a-z])","i");
  }
- return null;
+ return new RegExp("(^|[\\s,،/()\\-])("+t+")(?=$|[\\s,،/()\\-.,;:])","i");
 }
+
+function detectForm(value){
+ const lower=normalizeText(value);
+ const matches=[];
+ FORM_PATTERNS.forEach(item=>{
+  item.terms.forEach(term=>{
+   const re=formTermRegex(term);
+   const match=re.exec(lower);
+   if(match){
+    matches.push({
+     ...item,
+     term,
+     index:match.index+match[1].length
+    });
+   }
+  });
+ });
+ matches.sort((a,b)=>a.index-b.index||b.term.length-a.term.length);
+ return matches[0]||null;
+}
+
+function removeFormTerm(value,term){
+ return String(value).replace(formTermRegex(term),"$1 ");
+}
+
+function extractRoutes(value){
+ let text=String(value??"");
+ const found=[];
+ const rules=[
+  [/\b(?:IM\s*[-/,]\s*IV|IV\s*[-/,]\s*IM|IM\s+IV|IV\s+IM)\b/ig,"وريدي/عضلي"],
+  [/\bIV\s+ONLY\b/ig,"وريدي"],
+  [/\bIM\b|\bintramuscular(?:ly)?\b/ig,"عضلي"],
+  [/\bIV\b|\bintravenous(?:ly)?\b/ig,"وريدي"],
+  [/\bSC\b|\bsubcutaneous(?:ly)?\b/ig,"تحت الجلد"],
+  [/وريدي\s*[/،-]\s*عضلي|عضلي\s*[/،-]\s*وريدي/ig,"وريدي/عضلي"]
+ ];
+ rules.forEach(([pattern,label])=>{
+  text=text.replace(pattern,()=>{
+   if(!found.includes(label))found.push(label);
+   return " ";
+  });
+ });
+ if(found.includes("وريدي")&&found.includes("عضلي")){
+  return {
+   text,
+   routes:["وريدي/عضلي",...found.filter(x=>x!=="وريدي"&&x!=="عضلي")].join(" / ")
+  };
+ }
+ return {text,routes:found.join(" / ")};
+}
+
+function mergeRoutes(...values){
+ const combined=values.filter(Boolean).join(" ");
+ return extractRoutes(combined).routes;
+}
+
 function parseMedicine(raw,externalPrice){
  let text=String(raw ?? "").trim();
- if(!text) throw Error("اكتب معلومات الدواء أولاً.");
+ if(!text)throw Error("اكتب معلومات الدواء أولاً.");
 
- let price=externalPrice!==undefined && externalPrice!==null && externalPrice!==""
-  ? normalizePrice(externalPrice) : null;
+ let price=externalPrice!==undefined&&externalPrice!==null&&externalPrice!==""
+  ?normalizePrice(externalPrice):null;
 
  if(price===null){
   const match=text.match(/(?:^|\s)(\d[\d٠-٩٬،,.]*)\s*(?:د\.?ع|iqd)?\s*$/i);
-  if(!match) throw Error("لم أتعرف على السعر. ضعه في نهاية الفقرة.");
+  if(!match)throw Error("لم أتعرف على السعر. ضعه في نهاية الفقرة.");
   price=normalizePrice(match[1]);
   text=text.slice(0,match.index).trim();
  }
- if(price===null) throw Error("السعر غير صالح.");
+ if(price===null)throw Error("السعر غير صالح.");
 
- let company="";
- const companyMatches=[...text.matchAll(/\(([^)]+)\)/g)];
- if(companyMatches.length){
-  const last=companyMatches[companyMatches.length-1];
-  company=last[1].trim();
-  text=text.replace(last[0]," ").replace(/\s+/g," ").trim();
- }
+ const routeResult=extractRoutes(text);
+ text=routeResult.text;
+ const route=routeResult.routes;
 
  const detected=detectForm(text);
- let form=detected?.form || "";
- let unit=detected?.unit || "";
- if(detected){
-  const escaped=detected.term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
-  const re=new RegExp("(^|[^a-z0-9])"+escaped+"($|[^a-z0-9])","i");
-  text=text.replace(re," ").replace(new RegExp(escaped,"i")," ");
- }
+ let form=detected?.form||"";
+ let unit=detected?.unit||"";
+ if(detected)text=removeFormTerm(text,detected.term);
 
  const strengthRe=/\b\d+(?:\.\d+)?\s*\/\s*\d+(?:\.\d+)?(?:\s*(?:mg|mcg|μg|g|kg|ml|l|iu|u|%)\b)?|\b\d+(?:\.\d+)?\s*(?:mg|mcg|μg|g|kg|ml|l|iu|u|%|مغ|ملغ|ميكروغرام|غرام|جم|مل|وحدة|٪)\b|\b\d+(?:\.\d+)?(?=\s|$)/ig;
+
  const strengths=[...text.matchAll(strengthRe)];
  const strength=strengths.map(x=>x[0].replace(/\s+/g," ").trim()).join(" / ");
- strengths.reverse().forEach(x=>{text=text.replace(x[0]," ")});
+ strengths.reverse().forEach(x=>{text=text.replace(x[0]," ");});
  text=text.replace(/\s+/g," ").replace(/^[\s,،\-–]+|[\s,،\-–]+$/g,"").trim();
 
- if(!text) throw Error("اسم الدواء غير واضح. اكتب الاسم التجاري.");
+ if(!text)throw Error("اسم الدواء غير واضح. اكتب الاسم التجاري.");
+
  return {
   name:text,
   strength,
   form,
-  company,
+  route,
+  company:"",
   price,
-  unit:unit || "غير محدد",
+  unit:unit||"غير محدد",
   generic:"",
   localName:"",
   description:"",
   origin:""
  };
 }
+
 function displayName(m){
- return [m.name,m.strength,m.form].filter(Boolean).join(" ");
+ return [m.name,m.strength,m.form,m.route?"("+m.route+")":""].filter(Boolean).join(" ");
 }
+
 function medicineIcon(form){
  const found=FORM_PATTERNS.find(x=>x.form===form);
- return found?.icon || "✚";
+ return found?.icon||"✚";
 }
+
 function formatPrice(value){
  const n=Number(value);
+ return Number.isFinite(n)?n.toLocaleString("en-US"):"—";
+}
+
  return Number.isFinite(n) ? n.toLocaleString("en-US") : "—";
 }
 
