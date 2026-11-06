@@ -979,7 +979,7 @@ function openDetails(id){
   ["بلد المنشأ",m.origin],
   ["السعر",formatPrice(m.price)+" د.ع"],
   ["وحدة التسعير",m.unit],
-  ["الوصف",m.description],
+
   ["ملاحظات",m.notes]
  ].filter(x=>x[1]!==undefined && x[1]!==null && String(x[1]).trim()!=="");
  $("detailContent").innerHTML=`
