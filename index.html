@@ -5,6 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#173d35">
+  <link rel="manifest" href="./manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Prices">
 <title>Prices | دليل أسعار الأدوية</title>
 <style>
 :root{--bg:#eef2ee;--panel:rgba(255,255,255,.72);--text:#19352e;--muted:#78877f;--line:rgba(40,70,55,.12);--accent:#245b4d;--soft:#e2eee7;--shadow:0 12px 35px #183b2b12}
@@ -303,6 +307,14 @@ $("themeBtn").onclick=()=>{
  document.documentElement.dataset.theme=next;
  localStorage.setItem("prices-theme",next);
 };
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .catch(error => console.error("PWA:", error));
+  });
+}
 
 render();
 </script>
