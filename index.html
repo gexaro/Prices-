@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#173d35">
+<meta name="theme-color" content="#172B4D">
 <link rel="manifest" href="./manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -13,24 +13,24 @@
 
 <style>
 :root{
- --bg:#eef2ee;
- --panel:rgba(255,255,255,.78);
- --text:#19352e;
- --muted:#78877f;
- --line:rgba(40,70,55,.12);
- --accent:#245b4d;
- --soft:#e2eee7;
- --shadow:0 12px 35px #183b2b12;
+ --bg:#F3F5F8;
+ --panel:rgba(255,255,255,.88);
+ --text:#172B4D;
+ --muted:#718096;
+ --line:rgba(23,43,77,.12);
+ --accent:#36B6A0;
+ --soft:#E2F3EF;
+ --shadow:0 12px 35px #172B4D12;
 }
 [data-theme="dark"]{
- --bg:#101a17;
- --panel:rgba(34,49,43,.88);
- --text:#edf5ef;
- --muted:#a3b4a9;
+ --bg:#101B2D;
+ --panel:rgba(23,43,77,.90);
+ --text:#F3F5F8;
+ --muted:#AAB8CA;
  --line:#ffffff18;
- --accent:#8bc7a9;
- --soft:#263c32;
- --shadow:0 12px 35px #0004;
+ --accent:#36B6A0;
+ --soft:#243B55;
+ --shadow:0 12px 35px #0005;
 }
 *{box-sizing:border-box}
 body{
@@ -54,7 +54,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 }
 .iconbtn{background:var(--soft);color:var(--text)}
 .welcome{padding:24px 4px}
-.welcome small{color:#b28c56;letter-spacing:2px}
+.welcome small{color:#F2B84B;letter-spacing:2px}
 .welcome h1{font-size:32px;line-height:1.5;margin:10px 0}
 .welcome h1 span{color:var(--accent)}
 .welcome p{color:var(--muted);font-size:14px}
@@ -76,7 +76,7 @@ input,select{
  outline-color:var(--accent);
 }
 input::placeholder{color:var(--muted)}
-.primary{background:var(--accent);color:white}
+.primary{background:var(--accent);color:#172B4D}
 .secondary{background:var(--soft);color:var(--text)}
 .danger{background:#a83e3e;color:white}
 .actions{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
